@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo News — 뉴스 목록</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+            background: #f4f6f9;
+            color: #333;
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            color: #1a1a2e;
+        }
+
+        .message {
+            text-align: center;
+            color: #555;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .search-form {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .search-form input[type="text"] {
+            padding: 0.6rem 1rem;
+            width: 300px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-form input[type="text"]:focus {
+            border-color: #4a90d9;
+        }
+
+        .search-form button {
+            padding: 0.6rem 1.5rem;
+            background: #4a90d9;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .search-form button:hover {
+            background: #357abd;
+        }
+
+        .news-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .news-card {
+            background: #fff;
+            padding: 1.2rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .news-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .news-card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .news-card h2 a {
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+
+        .news-card h2 a:hover {
+            color: #4a90d9;
+            text-decoration: underline;
+        }
+
+        .news-card .description {
+            font-size: 0.92rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .news-card .meta {
+            font-size: 0.82rem;
+            color: #999;
+        }
+
+        .empty {
+            text-align: center;
+            color: #999;
+            padding: 3rem;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📰 Echo News</h1>
+
+    <form class="search-form" method="get" action="">
+        <input type="text" name="q" value="{{ query }}" placeholder="검색어를 입력하세요">
+        <button type="submit">검색</button>
+    </form>
+
+    <p class="message">{{ message }}</p>
+
+    <div class="news-grid">
+        {% for news in news_list %}
+        <article class="news-card">
+            <h2><a href="{{ news.link }}" target="_blank" rel="noopener">{{ news.title }}</a></h2>
+            <p class="description">{{ news.description }}</p>
+            <p class="meta">📅 {{ news.pub_date|date:"Y년 m월 d일 H:i" }} · 👁 조회 {{ news.views }}회</p>
+        </article>
+        {% empty %}
+        <p class="empty">저장된 뉴스가 없습니다.</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
