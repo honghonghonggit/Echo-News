@@ -93,3 +93,38 @@ def save_news_to_db(items):
             skipped += 1
 
     return saved, skipped
+
+
+def fetch_og_image(url):
+    """
+    기사 원문 링크에서 og:image 메타 태그의 썸네일 이미지 URL을 추출한다.
+
+    Args:
+        url: 기사 원문 링크
+
+    Returns:
+        str: og:image URL 문자열. 이미지가 없거나 오류 발생 시 빈 문자열 반환.
+    """
+    try:
+        from bs4 import BeautifulSoup
+
+        headers = {
+            'User-Agent': (
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                'Chrome/120.0.0.0 Safari/537.36'
+            ),
+        }
+
+        response = requests.get(url, headers=headers, timeout=5)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+        og_tag = soup.find('meta', property='og:image')
+
+        if og_tag and og_tag.get('content'):
+            return og_tag['content']
+
+        return ''
+    except Exception:
+        return ''
