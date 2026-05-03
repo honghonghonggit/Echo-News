@@ -11,7 +11,8 @@ def news_list(request):
 
     - GET ?q=검색어  → 네이버 API 호출 → og:image 추출 → DB 저장
     - GET ?sort=date  → 최신순 정렬 (기본값)
-    - 이미 존재하는 링크는 중복 저장하지 않음
+    - GET ?sort=sim   → 유사도순(인기순) 정렬
+    - 검색할 때마다 기존 DB 데이터를 삭제하고 새 결과만 저장
     """
     query = request.GET.get('q', '')
     sort = request.GET.get('sort', 'date')
@@ -20,7 +21,7 @@ def news_list(request):
     # ── 검색어가 있을 때만 API 호출 ──
     if query:
         try:
-            items = fetch_naver_news(query)
+            items = fetch_naver_news(query, sort=sort)
 
             # 기존 DB 데이터 전부 삭제
             News.objects.all().delete()
@@ -53,9 +54,11 @@ def news_list(request):
             message = f'뉴스 가져오기 실패: {e}'
 
     # ── 정렬 ──
-    if sort == 'date':
-        news = News.objects.all().order_by('-pub_date')
+    if sort == 'sim':
+        # 유사도순: API가 반환한 순서대로(pk 순) 표시
+        news = News.objects.all().order_by('pk')
     else:
+        # 최신순: 발행일 내림차순
         news = News.objects.all().order_by('-pub_date')
 
     context = {

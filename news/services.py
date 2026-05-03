@@ -8,13 +8,14 @@ from django.db import IntegrityError
 from .models import News
 
 
-def fetch_naver_news(query, display=10):
+def fetch_naver_news(query, display=10, sort='date'):
     """
     네이버 뉴스 검색 API를 호출하여 뉴스 데이터를 가져온다.
 
     Args:
         query: 검색 키워드
         display: 한 번에 가져올 뉴스 개수 (기본 10개)
+        sort: 정렬 방식 — 'date'(최신순) 또는 'sim'(유사도순)
 
     Returns:
         list[dict]: API에서 반환된 뉴스 아이템 리스트
@@ -27,7 +28,7 @@ def fetch_naver_news(query, display=10):
     params = {
         'query': query,
         'display': display,
-        'sort': 'date',  # 최신순 정렬
+        'sort': sort,
     }
 
     response = requests.get(url, headers=headers, params=params, timeout=5)
