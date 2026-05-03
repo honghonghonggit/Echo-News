@@ -1,3 +1,5 @@
+import random
+
 from django.shortcuts import render
 from django.db import IntegrityError
 
@@ -14,11 +16,17 @@ def news_list(request):
     - GET ?sort=sim   → 유사도순(인기순) 정렬
     - 검색할 때마다 기존 DB 데이터를 삭제하고 새 결과만 저장
     """
+    DEFAULT_KEYWORDS = ["미국", "경제", "스포츠", "세계", "날씨", "기술", "연예"]
+
     query = request.GET.get('q', '')
     sort = request.GET.get('sort', 'date')
     message = ''
 
-    # ── 검색어가 있을 때만 API 호출 ──
+    # ── 키워드가 없으면 랜덤 키워드 자동 선택 ──
+    if not query:
+        query = random.choice(DEFAULT_KEYWORDS)
+
+    # ── API 호출 ──
     if query:
         try:
             items = fetch_naver_news(query, sort=sort)
