@@ -15,6 +15,7 @@ class News(models.Model):
         verbose_name='썸네일 이미지 링크',
     )
     views = models.IntegerField(default=0, verbose_name='조회수')
+    reaction_count = models.IntegerField(default=0, verbose_name='반응 수')
 
     class Meta:
         verbose_name = '뉴스'

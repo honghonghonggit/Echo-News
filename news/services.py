@@ -129,3 +129,79 @@ def fetch_og_image(url):
         return ''
     except Exception:
         return ''
+
+
+def fetch_reaction_count(url):
+    """
+    네이버 뉴스 기사 URL에서 반응 수(공감/이모지 반응)를 크롤링한다.
+
+    네이버 뉴스의 경우 반응 수 API(news.like.naver.com)를 호출하여
+    좋아요·공감 등 이모지 반응 수의 합계를 반환한다.
+    네이버 뉴스가 아닌 URL의 경우 BeautifulSoup으로 페이지를 파싱하여
+    반응 수 영역을 찾는다.
+
+    Args:
+        url: 뉴스 기사 링크 (네이버 뉴스 URL 권장)
+
+    Returns:
+        int: 반응 수 합계. 가져오지 못하면 0 반환.
+    """
+    import re
+    from bs4 import BeautifulSoup
+
+    try:
+        headers = {
+            'User-Agent': (
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                'Chrome/120.0.0.0 Safari/537.36'
+            ),
+            'Referer': 'https://n.news.naver.com',
+        }
+
+        # ── 네이버 뉴스 URL인 경우 반응 수 API 호출 ──
+        naver_match = re.search(
+            r'n\.news\.naver\.com/(?:mnews/)?article/(\d+)/(\d+)', url
+        )
+        if naver_match:
+            oid, aid = naver_match.group(1), naver_match.group(2)
+            api_url = (
+                'https://news.like.naver.com/v1/search/contents'
+            )
+            api_params = {
+                'suppress': 'true',
+                'q': f'NEWS[ne_{oid}_{aid}]',
+            }
+            resp = requests.get(
+                api_url, headers=headers, params=api_params, timeout=5
+            )
+            data = resp.json()
+
+            contents = data.get('contents', [])
+            if contents:
+                reactions = contents[0].get('reactions', [])
+                total = sum(r.get('count', 0) for r in reactions)
+                return total
+
+        # ── 일반 URL: BeautifulSoup으로 반응 수 파싱 ──
+        response = requests.get(url, headers=headers, timeout=5)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        selectors = [
+            'span.u_likeit_text._count',
+            'em.u_cnt._count',
+            'span.like_count',
+        ]
+        for selector in selectors:
+            tag = soup.select_one(selector)
+            if tag:
+                digits = re.sub(r'[^\d]', '', tag.get_text())
+                if digits:
+                    return int(digits)
+
+        return 0
+    except Exception:
+        return 0
+

@@ -379,6 +379,10 @@
                 <p class="card-meta">
                     <span>📅</span>
                     <span>{{ news.pub_date|date:"Y년 m월 d일 H:i" }}</span>
+                    {% if news.reaction_count > 0 %}
+                    <span style="margin-left: 0.6rem;">👍</span>
+                    <span>공감 {{ news.reaction_count }}</span>
+                    {% endif %}
                 </p>
             </div>
         </a>
