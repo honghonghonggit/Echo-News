@@ -21,19 +21,17 @@ def news_list(request):
     if query:
         try:
             items = fetch_naver_news(query)
+
+            # 기존 DB 데이터 전부 삭제
+            News.objects.all().delete()
+
             saved = 0
-            skipped = 0
 
             for item in items:
                 title = _clean_html(item.get('title', ''))
                 link = item.get('originallink') or item.get('link', '')
                 description = _clean_html(item.get('description', ''))
                 pub_date = _parse_pub_date(item.get('pubDate', ''))
-
-                # 중복 링크 확인
-                if News.objects.filter(link=link).exists():
-                    skipped += 1
-                    continue
 
                 # og:image 썸네일 추출
                 image_url = fetch_og_image(link)
@@ -48,9 +46,9 @@ def news_list(request):
                     )
                     saved += 1
                 except IntegrityError:
-                    skipped += 1
+                    pass
 
-            message = f'"{query}" 검색 완료 — 새로 저장: {saved}건, 중복 건너뜀: {skipped}건'
+            message = f'"{query}" 검색 완료 — 저장: {saved}건'
         except Exception as e:
             message = f'뉴스 가져오기 실패: {e}'
 
