@@ -20,7 +20,7 @@ def news_list(request):
 
     query = request.GET.get('q', '')
     sort = request.GET.get('sort', 'date')
-    message = ''
+
 
     # ── 키워드가 없으면 랜덤 키워드 자동 선택 ──
     if not query:
@@ -29,7 +29,7 @@ def news_list(request):
     # ── API 호출 ──
     if query:
         try:
-            items = fetch_naver_news(query, sort=sort)
+            items = fetch_naver_news(query, display=15, sort=sort)
 
             # 기존 DB 데이터 전부 삭제
             News.objects.all().delete()
@@ -62,9 +62,8 @@ def news_list(request):
                 except IntegrityError:
                     pass
 
-            message = f'"{query}" 검색 완료 — 저장: {saved}건'
         except Exception as e:
-            message = f'뉴스 가져오기 실패: {e}'
+            pass
 
     # ── 정렬 ──
     if sort == 'sim':
@@ -78,6 +77,6 @@ def news_list(request):
         'news_list': news,
         'query': query,
         'sort': sort,
-        'message': message,
+
     }
     return render(request, 'news/news_list.html', context)
