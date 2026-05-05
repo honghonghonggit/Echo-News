@@ -131,6 +131,43 @@
             transform: scale(1.03);
         }
 
+        /* ── 카테고리 탭 ── */
+        .category-tabs {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 640px;
+            width: 100%;
+        }
+
+        .category-tab {
+            padding: 0.45rem 1.1rem;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .category-tab:hover {
+            background: rgba(108, 99, 255, 0.15);
+            border-color: rgba(108, 99, 255, 0.3);
+            color: var(--text-primary);
+        }
+
+        .category-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(108, 99, 255, 0.4);
+        }
+
         /* ── 결과 메시지 ── */
         .result-message {
             text-align: center;
@@ -396,6 +433,17 @@
                 <button class="btn btn-search" type="submit" id="search-btn">검색</button>
             </div>
         </form>
+
+        <!-- ── 카테고리 탭 ── -->
+        <div class="category-tabs">
+            <a href="?q=미국" class="category-tab{% if query == '미국' %} active{% endif %}">미국</a>
+            <a href="?q=경제" class="category-tab{% if query == '경제' %} active{% endif %}">경제</a>
+            <a href="?q=스포츠" class="category-tab{% if query == '스포츠' %} active{% endif %}">스포츠</a>
+            <a href="?q=세계" class="category-tab{% if query == '세계' %} active{% endif %}">세계</a>
+            <a href="?q=날씨" class="category-tab{% if query == '날씨' %} active{% endif %}">날씨</a>
+            <a href="?q=기술" class="category-tab{% if query == '기술' %} active{% endif %}">기술</a>
+            <a href="?q=연예" class="category-tab{% if query == '연예' %} active{% endif %}">연예</a>
+        </div>
 
     </header>
 
