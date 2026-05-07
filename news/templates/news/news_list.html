@@ -326,7 +326,93 @@
             opacity: 0.7;
         }
 
+        /* ── 레이아웃 ── */
+        .page-layout {
+            display: flex;
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            gap: 2rem;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 220px;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 920px;
+            min-width: 0;
+        }
+
+        .page-layout .news-container {
+            margin: 0;
+            padding: 0;
+            max-width: 100%;
+        }
+
+        /* ── 헤더 컨트롤 (시계 + 검색창) ── */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-clock {
+            width: 250px;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .header-spacer {
+            width: 250px;
+        }
+
+        #realtime-clock {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(108, 99, 255, 0.4);
+            line-height: 1;
+        }
+
+        @media (max-width: 800px) {
+            .header-controls {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            .header-clock {
+                justify-content: center;
+            }
+            .header-spacer {
+                display: none;
+            }
+        }
+
         /* ── 반응형 ── */
+        @media (max-width: 1200px) {
+            .page-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+            .sidebar {
+                width: 100%;
+                max-width: 920px;
+                position: static;
+                margin-bottom: 1rem;
+            }
+        }
+
         @media (max-width: 640px) {
             .news-card {
                 flex-direction: column;
@@ -425,14 +511,22 @@
                     News</span><span class="dot">.</span></a>
         </h1>
 
-        <form class="search-wrapper" method="get" action="" id="search-form">
-            <input type="hidden" name="sort" id="sort-input" value="{{ sort }}">
-            <div class="input-group">
-                <input type="text" class="form-control" name="q" id="search-input" value="{{ query }}"
-                    placeholder="검색어를 입력하세요" autocomplete="off">
-                <button class="btn btn-search" type="submit" id="search-btn">검색</button>
+        <div class="header-controls">
+            <div class="header-clock">
+                <div id="realtime-clock">00:00:00</div>
             </div>
-        </form>
+
+            <form class="search-wrapper" method="get" action="" id="search-form">
+                <input type="hidden" name="sort" id="sort-input" value="{{ sort }}">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="q" id="search-input" value="{{ query }}"
+                        placeholder="검색어를 입력하세요" autocomplete="off">
+                    <button class="btn btn-search" type="submit" id="search-btn">검색</button>
+                </div>
+            </form>
+
+            <div class="header-spacer"></div>
+        </div>
 
         <!-- ── 카테고리 탭 ── -->
         <div class="category-tabs">
@@ -447,8 +541,17 @@
 
     </header>
 
-    <!-- ── 뉴스 카드 리스트 ── -->
-    <main class="news-container">
+    <!-- ── 3단 레이아웃 ── -->
+    <div class="page-layout">
+        
+        <!-- ── 왼쪽 사이드바 ── -->
+        <aside class="sidebar left-sidebar">
+            <!-- 시계가 헤더로 이동됨, 향후 기능 추가를 위해 비워둠 -->
+        </aside>
+
+        <!-- ── 중앙 뉴스 리스트 ── -->
+        <div class="main-content">
+            <main class="news-container">
 
         {% if query %}
         <!-- ── 정렬 탭 ── -->
@@ -499,7 +602,15 @@
         </div>
 
         {% endfor %}
-    </main>
+            </main>
+        </div>
+
+        <!-- ── 오른쪽 사이드바 ── -->
+        <aside class="sidebar right-sidebar">
+            <!-- 향후 기능 추가를 위해 비워둠 -->
+        </aside>
+
+    </div>
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -507,6 +618,20 @@
         crossorigin="anonymous"></script>
 
     <script>
+        // ── 실시간 시계 업데이트 ──
+        function updateClock() {
+            const clockElement = document.getElementById('realtime-clock');
+            if (clockElement) {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock(); // 초기 1회 즉시 실행
+
         // ── 정렬 탭 클릭 처리 ──
         document.querySelectorAll('.sort-tab').forEach(function (tab) {
             tab.addEventListener('click', function () {
