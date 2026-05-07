@@ -386,6 +386,10 @@
             top: 220px;
         }
 
+        .sidebar.left-sidebar {
+            width: 320px;
+        }
+
         .sidebar.right-sidebar {
             width: 400px;
         }
@@ -679,33 +683,35 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 1.5rem;
+            padding: 2rem;
             width: 100%;
+            min-height: calc(100vh - 240px);
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .weather-header {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
             color: var(--text-primary);
         }
 
         .weather-body {
             display: flex;
             flex-direction: column;
-            gap: 0.8rem;
+            gap: 1.2rem;
+            flex: 1;
         }
 
         .weather-loading {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 1rem;
             text-align: center;
-            padding: 1rem 0;
+            padding: 2rem 0;
         }
 
         .weather-main {
@@ -715,36 +721,86 @@
         }
 
         .weather-icon {
-            font-size: 3rem;
+            font-size: 4.5rem;
             line-height: 1;
         }
 
         .weather-temp {
-            font-size: 2.2rem;
+            font-size: 3.2rem;
             font-weight: 800;
             color: var(--accent);
-            letter-spacing: -1px;
+            letter-spacing: -1.5px;
         }
 
         .weather-details {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.8rem;
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-            padding: 1rem;
+            border-radius: 12px;
+            padding: 1.2rem;
         }
 
         .weather-detail-item {
             display: flex;
             justify-content: space-between;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             color: var(--text-secondary);
         }
 
         .weather-detail-value {
             font-weight: 600;
             color: var(--text-primary);
+        }
+
+        /* ── 주간 예보 ── */
+        .weather-forecast {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: auto;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .forecast-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .forecast-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        
+        .forecast-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .forecast-date {
+            color: var(--text-secondary);
+            width: 70px;
+        }
+
+        .forecast-icon {
+            font-size: 1.3rem;
+        }
+
+        .forecast-temp {
+            color: var(--text-primary);
+            font-weight: 600;
         }
     </style>
 </head>
@@ -1071,8 +1127,8 @@
             if (!weatherBody) return;
 
             try {
-                // 날씨 정보 (기온, 풍속, 날씨 코드)
-                const weatherRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98&current_weather=true');
+                // 날씨 정보 (기온, 풍속, 날씨 코드 + 주간 예보)
+                const weatherRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul');
                 const weatherData = await weatherRes.json();
                 
                 // 미세먼지 정보 (PM10)
@@ -1087,21 +1143,53 @@
                 const pm10 = aqiData.current.pm10;
                 
                 // WMO Weather interpretation codes
-                let icon = '☀️';
-                let desc = '맑음';
-                if (code === 0) { icon = '☀️'; desc = '맑음'; }
-                else if (code === 1 || code === 2 || code === 3) { icon = '⛅'; desc = '구름 조금/흐림'; }
-                else if (code === 45 || code === 48) { icon = '🌫️'; desc = '안개'; }
-                else if (code >= 51 && code <= 67) { icon = '🌧️'; desc = '비'; }
-                else if (code >= 71 && code <= 77) { icon = '❄️'; desc = '눈'; }
-                else if (code >= 80 && code <= 82) { icon = '🌧️'; desc = '소나기'; }
-                else if (code >= 85 && code <= 86) { icon = '❄️'; desc = '눈보라'; }
-                else if (code >= 95) { icon = '⛈️'; desc = '뇌우'; }
+                const getIconAndDesc = (c) => {
+                    if (c === 0) return { icon: '☀️', desc: '맑음' };
+                    if (c === 1 || c === 2 || c === 3) return { icon: '⛅', desc: '구름 조금/흐림' };
+                    if (c === 45 || c === 48) return { icon: '🌫️', desc: '안개' };
+                    if (c >= 51 && c <= 67) return { icon: '🌧️', desc: '비' };
+                    if (c >= 71 && c <= 77) return { icon: '❄️', desc: '눈' };
+                    if (c >= 80 && c <= 82) return { icon: '🌧️', desc: '소나기' };
+                    if (c >= 85 && c <= 86) return { icon: '❄️', desc: '눈보라' };
+                    if (c >= 95) return { icon: '⛈️', desc: '뇌우' };
+                    return { icon: '☀️', desc: '맑음' };
+                };
+
+                const currentInfo = getIconAndDesc(code);
+                const icon = currentInfo.icon;
+                const desc = currentInfo.desc;
 
                 let pmStatus = '좋음 🟢';
                 if (pm10 > 150) pmStatus = '매우나쁨 🔴';
                 else if (pm10 > 80) pmStatus = '나쁨 🟠';
                 else if (pm10 > 30) pmStatus = '보통 🟡';
+
+                // 주간 예보 HTML 생성
+                const daily = weatherData.daily;
+                let forecastHtml = '<div class="weather-forecast"><div class="forecast-title">📅 주간 예보</div>';
+                
+                // 오늘을 제외하고 내일부터 6일간 표시 (인덱스 1 ~ 6)
+                for (let i = 1; i < 7; i++) {
+                    const dateStr = daily.time[i];
+                    const maxT = Math.round(daily.temperature_2m_max[i]);
+                    const minT = Math.round(daily.temperature_2m_min[i]);
+                    const dCode = daily.weathercode[i];
+                    
+                    const dateObj = new Date(dateStr);
+                    const days = ['일', '월', '화', '수', '목', '금', '토'];
+                    const dayName = days[dateObj.getDay()];
+                    
+                    const dIconInfo = getIconAndDesc(dCode);
+
+                    forecastHtml += `
+                        <div class="forecast-item">
+                            <span class="forecast-date">${dateObj.getMonth()+1}/${dateObj.getDate()} (${dayName})</span>
+                            <span class="forecast-icon" title="${dIconInfo.desc}">${dIconInfo.icon}</span>
+                            <span class="forecast-temp">${minT}° / ${maxT}°</span>
+                        </div>
+                    `;
+                }
+                forecastHtml += '</div>';
 
                 weatherBody.innerHTML = `
                     <div class="weather-main">
@@ -1118,6 +1206,7 @@
                             <span class="weather-detail-value">${pm10} μg/m³ (${pmStatus})</span>
                         </div>
                     </div>
+                    ${forecastHtml}
                 `;
 
             } catch (error) {
