@@ -7,7 +7,7 @@ from .models import News
 class NewsAdmin(admin.ModelAdmin):
     """Django Admin에서 뉴스 데이터를 편리하게 조회·관리하기 위한 설정"""
 
-    list_display = ('title', 'pub_date', 'views') //맨 위 사이트 제목
+    list_display = ('title', 'pub_date', 'views') #맨 위 사이트 제목
     list_filter = ('pub_date',)
     search_fields = ('title', 'description')
     ordering = ('-pub_date',)
