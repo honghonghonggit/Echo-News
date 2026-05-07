@@ -673,6 +673,79 @@
             font-size: 0.9rem;
             padding: 2rem 0;
         }
+
+        /* ── 날씨 위젯 ── */
+        .weather-widget {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .weather-header {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .weather-body {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .weather-loading {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .weather-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .weather-temp {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -1px;
+        }
+
+        .weather-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .weather-detail-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .weather-detail-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
     </style>
 </head>
 
@@ -721,7 +794,14 @@
         
         <!-- ── 왼쪽 사이드바 ── -->
         <aside class="sidebar left-sidebar">
-            <!-- 시계가 헤더로 이동됨, 향후 기능 추가를 위해 비워둠 -->
+            <div class="weather-widget">
+                <div class="weather-header">
+                    <span>📍</span> 서울 날씨
+                </div>
+                <div class="weather-body" id="weather-body">
+                    <div class="weather-loading">날씨 정보를 불러오는 중...</div>
+                </div>
+            </div>
         </aside>
 
         <!-- ── 중앙 뉴스 리스트 ── -->
@@ -984,6 +1064,70 @@
         // 초기화
         renderBookmarks();
         updateBookmarkButtons();
+
+        // ── 날씨 위젯 ──
+        async function fetchWeather() {
+            const weatherBody = document.getElementById('weather-body');
+            if (!weatherBody) return;
+
+            try {
+                // 날씨 정보 (기온, 풍속, 날씨 코드)
+                const weatherRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98&current_weather=true');
+                const weatherData = await weatherRes.json();
+                
+                // 미세먼지 정보 (PM10)
+                const aqiRes = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=37.57&longitude=126.98&current=pm10');
+                const aqiData = await aqiRes.json();
+
+                const current = weatherData.current_weather;
+                const temp = current.temperature;
+                const windSpeed = current.windspeed;
+                const code = current.weathercode;
+                
+                const pm10 = aqiData.current.pm10;
+                
+                // WMO Weather interpretation codes
+                let icon = '☀️';
+                let desc = '맑음';
+                if (code === 0) { icon = '☀️'; desc = '맑음'; }
+                else if (code === 1 || code === 2 || code === 3) { icon = '⛅'; desc = '구름 조금/흐림'; }
+                else if (code === 45 || code === 48) { icon = '🌫️'; desc = '안개'; }
+                else if (code >= 51 && code <= 67) { icon = '🌧️'; desc = '비'; }
+                else if (code >= 71 && code <= 77) { icon = '❄️'; desc = '눈'; }
+                else if (code >= 80 && code <= 82) { icon = '🌧️'; desc = '소나기'; }
+                else if (code >= 85 && code <= 86) { icon = '❄️'; desc = '눈보라'; }
+                else if (code >= 95) { icon = '⛈️'; desc = '뇌우'; }
+
+                let pmStatus = '좋음 🟢';
+                if (pm10 > 150) pmStatus = '매우나쁨 🔴';
+                else if (pm10 > 80) pmStatus = '나쁨 🟠';
+                else if (pm10 > 30) pmStatus = '보통 🟡';
+
+                weatherBody.innerHTML = `
+                    <div class="weather-main">
+                        <div class="weather-icon" title="${desc}">${icon}</div>
+                        <div class="weather-temp">${temp}°C</div>
+                    </div>
+                    <div class="weather-details">
+                        <div class="weather-detail-item">
+                            <span>풍속</span>
+                            <span class="weather-detail-value">${windSpeed} km/h</span>
+                        </div>
+                        <div class="weather-detail-item">
+                            <span>미세먼지 (PM10)</span>
+                            <span class="weather-detail-value">${pm10} μg/m³ (${pmStatus})</span>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('날씨 정보를 가져오는 중 오류 발생:', error);
+                weatherBody.innerHTML = '<div class="weather-loading" style="color: #ff6b6b;">날씨 정보를 불러오지 못했습니다.</div>';
+            }
+        }
+
+        // 페이지 로드 시 날씨 정보 가져오기
+        fetchWeather();
 
     </script>
 
