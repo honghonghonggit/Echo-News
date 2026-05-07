@@ -302,6 +302,46 @@
             border-color: var(--accent-hover);
         }
 
+        /* ── 페이지네이션 ── */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            padding: 0.55rem 1.1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: -0.2px;
+        }
+
+        .page-btn:hover {
+            background: rgba(108, 99, 255, 0.12);
+            border-color: rgba(108, 99, 255, 0.3);
+            color: var(--text-primary);
+        }
+
+        .page-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(108, 99, 255, 0.35);
+        }
+
+        .page-btn.active:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
         /* ── 빈 상태 ── */
         .empty-state {
             text-align: center;
@@ -377,13 +417,24 @@
         }
 
         #realtime-clock {
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             font-weight: 800;
             color: var(--accent);
             font-variant-numeric: tabular-nums;
             letter-spacing: 2px;
             text-shadow: 0 0 15px rgba(108, 99, 255, 0.4);
             line-height: 1;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        #ampm {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-shadow: none;
+            letter-spacing: normal;
         }
 
         @media (max-width: 800px) {
@@ -513,7 +564,7 @@
 
         <div class="header-controls">
             <div class="header-clock">
-                <div id="realtime-clock">00:00:00</div>
+                <div id="realtime-clock"><span id="ampm"></span> <span id="time">00:00:00</span></div>
             </div>
 
             <form class="search-wrapper" method="get" action="" id="search-form">
@@ -602,6 +653,10 @@
         </div>
 
         {% endfor %}
+
+        <!-- 페이지네이션 컨트롤 -->
+        <div class="pagination-container" id="pagination-container"></div>
+
             </main>
         </div>
 
@@ -620,17 +675,78 @@
     <script>
         // ── 실시간 시계 업데이트 ──
         function updateClock() {
-            const clockElement = document.getElementById('realtime-clock');
-            if (clockElement) {
+            const ampmElement = document.getElementById('ampm');
+            const timeElement = document.getElementById('time');
+            if (ampmElement && timeElement) {
                 const now = new Date();
-                const hours = String(now.getHours()).padStart(2, '0');
+                let hours = now.getHours();
+                const ampm = hours >= 12 ? '오후' : '오전';
+                hours = hours % 12;
+                hours = hours ? hours : 12; // 0시는 12시로 표시
+                
+                const paddedHours = String(hours).padStart(2, '0');
                 const minutes = String(now.getMinutes()).padStart(2, '0');
                 const seconds = String(now.getSeconds()).padStart(2, '0');
-                clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+                
+                ampmElement.textContent = ampm;
+                timeElement.textContent = `${paddedHours}:${minutes}:${seconds}`;
             }
         }
         setInterval(updateClock, 1000);
         updateClock(); // 초기 1회 즉시 실행
+
+        // ── 프론트엔드 페이지네이션 ──
+        const ITEMS_PER_PAGE = 5;
+        const newsCards = Array.from(document.querySelectorAll('.news-card'));
+        const paginationContainer = document.getElementById('pagination-container');
+        let currentPage = 1;
+
+        function renderPage(page) {
+            currentPage = page;
+            const startIdx = (page - 1) * ITEMS_PER_PAGE;
+            const endIdx = startIdx + ITEMS_PER_PAGE;
+
+            newsCards.forEach((card, idx) => {
+                if (idx >= startIdx && idx < endIdx) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            renderPaginationControls();
+            
+            // 페이지 이동 시 상단으로 부드럽게 스크롤
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderPaginationControls() {
+            if (!paginationContainer || newsCards.length <= ITEMS_PER_PAGE) {
+                if(paginationContainer) paginationContainer.innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(newsCards.length / ITEMS_PER_PAGE);
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const activeClass = i === currentPage ? ' active' : '';
+                html += `<button class="page-btn${activeClass}" data-page="${i}">[${i}]</button>`;
+            }
+            paginationContainer.innerHTML = html;
+
+            const pageBtns = document.querySelectorAll('.page-btn');
+            pageBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.getAttribute('data-page'));
+                    renderPage(page);
+                });
+            });
+        }
+
+        // 초기 페이지 렌더링
+        if (newsCards.length > 0) {
+            renderPage(1);
+        }
 
         // ── 정렬 탭 클릭 처리 ──
         document.querySelectorAll('.sort-tab').forEach(function (tab) {
