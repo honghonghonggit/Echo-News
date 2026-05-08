@@ -908,9 +908,11 @@
                 </div>
             </form>
 
-            <div class="header-ticker" id="header-ticker">
-                <div class="ticker-content" id="ticker-content">
-                    <span style="color: var(--text-muted); font-size: 0.85rem; padding-left: 1rem;">지표를 불러오는 중...</span>
+            <div class="header-right-spacer" style="width: 250px; position: relative;">
+                <div class="header-ticker" id="header-ticker">
+                    <div class="ticker-content" id="ticker-content">
+                        <span style="color: var(--text-muted); font-size: 0.85rem; padding-left: 1rem;">지표를 불러오는 중...</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1347,6 +1349,7 @@
                             const ctx = document.getElementById(`ticker-chart-${index}`).getContext('2d');
                             const isPositive = item.change >= 0;
                             const color = isPositive ? '#00e676' : '#ff5252';
+                            const bgColor = isPositive ? 'rgba(0, 230, 118, 0.2)' : 'rgba(255, 82, 82, 0.2)';
                             
                             new Chart(ctx, {
                                 type: 'line',
@@ -1355,7 +1358,9 @@
                                     datasets: [{
                                         data: item.history,
                                         borderColor: color,
+                                        backgroundColor: bgColor,
                                         borderWidth: 2,
+                                        fill: true,
                                         tension: 0.3,
                                         pointRadius: 0
                                     }]

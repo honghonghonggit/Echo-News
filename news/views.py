@@ -124,9 +124,9 @@ def ticker_api(request):
                 quote = indicators.get('quote', [{}])[0]
                 close_prices = quote.get('close', [])
                 
-                # Filter out None values and get last 7 days
+                # Filter out None values and use full 30 days
                 valid_closes = [p for p in close_prices if p is not None]
-                history = valid_closes[-7:] if len(valid_closes) >= 7 else valid_closes
+                history = valid_closes
                 
                 if current is not None:
                     change_pct = ((current - prev_close) / prev_close * 100) if prev_close else 0
