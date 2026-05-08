@@ -109,7 +109,7 @@ def ticker_api(request):
     
     for name, symbol in symbols:
         try:
-            url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}'
+            url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=1mo'
             res = requests.get(url, headers=headers, timeout=5)
             data = res.json()
             
@@ -119,12 +119,22 @@ def ticker_api(request):
                 current = meta.get('regularMarketPrice')
                 prev_close = meta.get('previousClose') or meta.get('chartPreviousClose')
                 
+                # Fetch history
+                indicators = result_list[0].get('indicators', {})
+                quote = indicators.get('quote', [{}])[0]
+                close_prices = quote.get('close', [])
+                
+                # Filter out None values and get last 7 days
+                valid_closes = [p for p in close_prices if p is not None]
+                history = valid_closes[-7:] if len(valid_closes) >= 7 else valid_closes
+                
                 if current is not None:
                     change_pct = ((current - prev_close) / prev_close * 100) if prev_close else 0
                     results.append({
                         'name': name,
                         'price': f"{current:,.2f}",
-                        'change': round(change_pct, 2)
+                        'change': round(change_pct, 2),
+                        'history': history
                     })
         except Exception as e:
             print(f"Yahoo API error for {symbol}: {e}")

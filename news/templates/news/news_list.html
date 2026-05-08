@@ -16,6 +16,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         /* ── 전역 ── */
@@ -425,8 +428,8 @@
 
         /* ── 금융 지표 티커 ── */
         .header-ticker {
-            width: 280px;
-            height: 40px;
+            width: 320px;
+            height: 80px;
             overflow: hidden;
             background: rgba(0, 0, 0, 0.25);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -457,13 +460,25 @@
         .ticker-item {
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 1rem;
             font-size: 0.85rem;
             font-weight: 600;
         }
 
+        .ticker-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
         .ticker-name {
             color: var(--text-secondary);
+        }
+
+        .ticker-price-row {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
         .ticker-price {
@@ -478,6 +493,15 @@
             color: #ff5252;
         }
         
+        .ticker-change.neutral {
+            color: var(--text-muted);
+        }
+
+        .ticker-chart-container {
+            width: 70px;
+            height: 40px;
+            position: relative;
+        }
         .ticker-change.neutral {
             color: var(--text-muted);
         }
@@ -1288,7 +1312,7 @@
                 
                 if (json.data && json.data.length > 0) {
                     let html = '';
-                    json.data.forEach(item => {
+                    json.data.forEach((item, index) => {
                         let changeClass = 'neutral';
                         let changeText = '-';
                         if (item.change > 0) {
@@ -1301,14 +1325,54 @@
                         
                         html += `
                             <div class="ticker-item">
-                                <span class="ticker-name">${item.name}</span>
-                                <span class="ticker-price">${item.price}</span>
-                                <span class="ticker-change ${changeClass}">${changeText}</span>
+                                <div class="ticker-info">
+                                    <span class="ticker-name">${item.name}</span>
+                                    <div class="ticker-price-row">
+                                        <span class="ticker-price">${item.price}</span>
+                                        <span class="ticker-change ${changeClass}">${changeText}</span>
+                                    </div>
+                                </div>
+                                <div class="ticker-chart-container">
+                                    <canvas id="ticker-chart-${index}"></canvas>
+                                </div>
                             </div>
                         `;
                     });
                     
                     tickerContent.innerHTML = html;
+
+                    // 차트 그리기
+                    json.data.forEach((item, index) => {
+                        if (item.history && item.history.length > 0) {
+                            const ctx = document.getElementById(`ticker-chart-${index}`).getContext('2d');
+                            const isPositive = item.change >= 0;
+                            const color = isPositive ? '#00e676' : '#ff5252';
+                            
+                            new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: item.history.map((_, i) => i),
+                                    datasets: [{
+                                        data: item.history,
+                                        borderColor: color,
+                                        borderWidth: 2,
+                                        tension: 0.3,
+                                        pointRadius: 0
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                                    scales: {
+                                        x: { display: false },
+                                        y: { display: false, min: Math.min(...item.history) * 0.99, max: Math.max(...item.history) * 1.01 }
+                                    },
+                                    layout: { padding: 0 }
+                                }
+                            });
+                        }
+                    });
                 }
             } catch (error) {
                 console.error('티커 데이터를 가져오는 중 오류 발생:', error);
