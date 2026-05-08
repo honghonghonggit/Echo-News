@@ -423,8 +423,63 @@
             margin-left: -30px;
         }
 
-        .header-spacer {
-            width: 250px;
+        /* ── 금융 지표 티커 ── */
+        .header-ticker {
+            width: 280px;
+            height: 40px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            white-space: nowrap;
+            margin-left: 1rem;
+        }
+
+        .ticker-content {
+            display: flex;
+            gap: 2.5rem;
+            padding-left: 100%;
+            animation: tickerScroll 20s linear infinite;
+        }
+
+        .ticker-content:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes tickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .ticker-name {
+            color: var(--text-secondary);
+        }
+
+        .ticker-price {
+            color: var(--text-primary);
+        }
+
+        .ticker-change.positive {
+            color: #00e676;
+        }
+
+        .ticker-change.negative {
+            color: #ff5252;
+        }
+        
+        .ticker-change.neutral {
+            color: var(--text-muted);
         }
 
         #realtime-clock {
@@ -829,7 +884,11 @@
                 </div>
             </form>
 
-            <div class="header-spacer"></div>
+            <div class="header-ticker" id="header-ticker">
+                <div class="ticker-content" id="ticker-content">
+                    <span style="color: var(--text-muted); font-size: 0.85rem; padding-left: 1rem;">지표를 불러오는 중...</span>
+                </div>
+            </div>
         </div>
 
         <!-- ── 카테고리 탭 ── -->
@@ -1217,6 +1276,47 @@
 
         // 페이지 로드 시 날씨 정보 가져오기
         fetchWeather();
+
+        // ── 금융 지표 티커 ──
+        async function fetchTicker() {
+            const tickerContent = document.getElementById('ticker-content');
+            if (!tickerContent) return;
+
+            try {
+                const res = await fetch('/api/ticker/');
+                const json = await res.json();
+                
+                if (json.data && json.data.length > 0) {
+                    let html = '';
+                    json.data.forEach(item => {
+                        let changeClass = 'neutral';
+                        let changeText = '-';
+                        if (item.change > 0) {
+                            changeClass = 'positive';
+                            changeText = `▲ ${item.change}%`;
+                        } else if (item.change < 0) {
+                            changeClass = 'negative';
+                            changeText = `▼ ${Math.abs(item.change)}%`;
+                        }
+                        
+                        html += `
+                            <div class="ticker-item">
+                                <span class="ticker-name">${item.name}</span>
+                                <span class="ticker-price">${item.price}</span>
+                                <span class="ticker-change ${changeClass}">${changeText}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    tickerContent.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('티커 데이터를 가져오는 중 오류 발생:', error);
+            }
+        }
+
+        fetchTicker();
+        setInterval(fetchTicker, 120000); // 2분마다 업데이트
 
     </script>
 

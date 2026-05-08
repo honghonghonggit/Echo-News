@@ -2,6 +2,10 @@ import random
 
 from django.shortcuts import render
 from django.db import IntegrityError
+from django.http import JsonResponse
+from django.core.cache import cache
+import os
+import requests
 
 from .models import News
 from .services import fetch_naver_news, fetch_og_image, fetch_reaction_count, _clean_html, _parse_pub_date
@@ -80,3 +84,51 @@ def news_list(request):
 
     }
     return render(request, 'news/news_list.html', context)
+
+
+def ticker_api(request):
+    """
+    Yahoo Finance 비공식 API를 사용하여 환율 및 주요 지수 데이터를 가져옵니다.
+    API 제한을 고려하여 115초(약 2분)간 캐싱합니다.
+    """
+    cache_key = 'yahoo_ticker_data'
+    cached_data = cache.get(cache_key)
+    if cached_data:
+        return JsonResponse(cached_data)
+
+    symbols = [
+        ('나스닥', '^IXIC'),
+        ('코스피', '^KS11'),
+        ('코스닥', '^KQ11'),
+        ('S&P 500', '^GSPC'),
+        ('환율(USD/KRW)', 'KRW=X'),
+    ]
+    
+    results = []
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+    
+    for name, symbol in symbols:
+        try:
+            url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}'
+            res = requests.get(url, headers=headers, timeout=5)
+            data = res.json()
+            
+            result_list = data.get('chart', {}).get('result', [])
+            if result_list and len(result_list) > 0:
+                meta = result_list[0].get('meta', {})
+                current = meta.get('regularMarketPrice')
+                prev_close = meta.get('previousClose') or meta.get('chartPreviousClose')
+                
+                if current is not None:
+                    change_pct = ((current - prev_close) / prev_close * 100) if prev_close else 0
+                    results.append({
+                        'name': name,
+                        'price': f"{current:,.2f}",
+                        'change': round(change_pct, 2)
+                    })
+        except Exception as e:
+            print(f"Yahoo API error for {symbol}: {e}")
+
+    response_data = {'data': results}
+    cache.set(cache_key, response_data, 115)
+    return JsonResponse(response_data)
