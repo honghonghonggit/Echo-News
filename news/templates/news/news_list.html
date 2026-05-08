@@ -429,37 +429,68 @@
         /* ── 오늘의 운세 박스 ── */
         .fortune-box {
             position: absolute;
-            right: -170px;
+            left: calc(100% + 60px); /* 티커(right: -30px)보다 완전히 밖으로 이동하여 겹침 방지 */
             top: 50%;
             transform: translateY(-50%);
-            width: 122px;
-            height: 122px;
-            background: rgba(108, 99, 255, 0.15);
-            border: 1px solid rgba(108, 99, 255, 0.4);
-            border-radius: 12px;
+            width: 130px;
+            height: 130px;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.15), rgba(255, 107, 107, 0.05));
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(144, 104, 255, 0.4);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0.8rem;
+            padding: 1rem;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
+                        0 0 15px rgba(108, 99, 255, 0.3), 
+                        inset 0 0 10px rgba(255, 255, 255, 0.05);
             z-index: 10;
+            overflow: hidden;
+        }
+
+        .fortune-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.08), transparent);
+            transform: rotate(45deg);
+            animation: fortuneShine 4s infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes fortuneShine {
+            0% { left: -100%; top: -100%; }
+            20% { left: 100%; top: 100%; }
+            100% { left: 100%; top: 100%; }
         }
 
         .fortune-box:hover {
-            background: rgba(108, 99, 255, 0.25);
-            transform: translateY(-50%) scale(1.02);
+            transform: translateY(-50%) scale(1.05);
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.25), rgba(255, 107, 107, 0.15));
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 
+                        0 0 25px rgba(108, 99, 255, 0.6), 
+                        inset 0 0 15px rgba(255, 255, 255, 0.1);
+            border-color: rgba(144, 104, 255, 0.8);
         }
 
         .fortune-text {
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-weight: 700;
+            color: #fff;
+            font-size: 1.05rem;
+            font-weight: 800;
             line-height: 1.4;
             word-break: keep-all;
             pointer-events: none;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 2;
         }
 
         /* ── 금융 지표 티커 ── */
@@ -1465,8 +1496,8 @@
             const textEl = document.getElementById('fortune-text');
             if (textEl) {
                 textEl.innerText = randomFortune;
-                textEl.style.fontSize = '0.85rem';
-                textEl.style.fontWeight = '600';
+                textEl.style.fontSize = '0.95rem';
+                textEl.style.fontWeight = '700';
             }
         });
 
