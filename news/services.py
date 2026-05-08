@@ -75,7 +75,7 @@ def save_news_to_db(items):
     saved = 0
     skipped = 0
 
-    for item in items:
+    for item in items: #기사 원본 링크를 받아와 제목과 사진을 함께 화면에 배치하는건가?
         title = _clean_html(item.get('title', ''))
         link = item.get('originallink') or item.get('link', '')
         description = _clean_html(item.get('description', ''))
