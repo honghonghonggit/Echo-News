@@ -426,6 +426,42 @@
             margin-left: -30px;
         }
 
+        /* ── 오늘의 운세 박스 ── */
+        .fortune-box {
+            position: absolute;
+            right: -170px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 122px;
+            height: 122px;
+            background: rgba(108, 99, 255, 0.15);
+            border: 1px solid rgba(108, 99, 255, 0.4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .fortune-box:hover {
+            background: rgba(108, 99, 255, 0.25);
+            transform: translateY(-50%) scale(1.02);
+        }
+
+        .fortune-text {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 700;
+            line-height: 1.4;
+            word-break: keep-all;
+            pointer-events: none;
+        }
+
         /* ── 금융 지표 티커 ── */
         .header-ticker {
             width: 320px;
@@ -909,6 +945,9 @@
             </form>
 
             <div class="header-right-spacer" style="width: 250px; position: relative;">
+                <div class="fortune-box" id="fortune-box" title="오늘의 운세를 확인하세요!">
+                    <span class="fortune-text" id="fortune-text">✨ 오늘의 운세</span>
+                </div>
                 <div class="header-ticker" id="header-ticker">
                     <div class="ticker-content" id="ticker-content">
                         <span style="color: var(--text-muted); font-size: 0.85rem; padding-left: 1rem;">지표를 불러오는 중...</span>
@@ -1386,6 +1425,50 @@
 
         fetchTicker();
         setInterval(fetchTicker, 120000); // 2분마다 업데이트
+
+        // ── 오늘의 운세 ──
+        const fortunes = [
+            "오늘은 뜻밖의 좋은 소식이 찾아옵니다.",
+            "작은 실수가 큰 깨달음을 줄 것입니다.",
+            "오늘 점심 메뉴가 하루를 결정합니다.",
+            "기다리던 연락이 올 수 있습니다.",
+            "오늘은 지갑을 조심하세요.",
+            "새로운 인연이 시작될 징조가 보입니다.",
+            "오늘 무리하면 내일 후회합니다.",
+            "작은 친절이 큰 행운을 불러옵니다.",
+            "오늘은 결정을 미루는 것이 좋습니다.",
+            "예상치 못한 곳에서 기회가 옵니다.",
+            "오늘 커피를 한 잔 더 마셔도 됩니다.",
+            "오늘의 노력은 반드시 빛을 발합니다.",
+            "오래된 친구에게 연락해보세요.",
+            "오늘은 새로운 도전을 두려워하지 마세요.",
+            "작은 것에 감사하면 큰 복이 옵니다.",
+            "오늘 하루 웃음이 끊이지 않을 것입니다.",
+            "무심코 한 말이 인연이 될 수 있습니다.",
+            "오늘은 평소보다 일찍 자는 것이 좋습니다.",
+            "계획한 일이 순조롭게 풀릴 것입니다.",
+            "오늘은 직감을 믿으세요.",
+            "주변 사람의 조언에 귀를 기울이세요.",
+            "오늘은 운동을 하면 더욱 좋습니다.",
+            "잊고 있던 것을 떠올릴 하루입니다.",
+            "오늘은 검색보다 직접 경험이 답입니다.",
+            "뉴스를 많이 볼수록 운이 올라갑니다.",
+            "오늘 Echo News를 켠 당신, 현명한 선택입니다.",
+            "정보가 곧 힘입니다. 오늘도 좋은 하루!",
+            "오늘은 하고 싶은 말을 참는 것이 좋습니다.",
+            "기대하지 않은 곳에서 답을 찾게 됩니다.",
+            "오늘 당신의 선택은 모두 옳습니다."
+        ];
+
+        document.getElementById('fortune-box')?.addEventListener('click', () => {
+            const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+            const textEl = document.getElementById('fortune-text');
+            if (textEl) {
+                textEl.innerText = randomFortune;
+                textEl.style.fontSize = '0.85rem';
+                textEl.style.fontWeight = '600';
+            }
+        });
 
     </script>
 
