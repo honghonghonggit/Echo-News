@@ -9,5 +9,5 @@ class NewsAdmin(admin.ModelAdmin):
 
     list_display = ('title', 'pub_date', 'views') #맨 위 사이트 제목
     list_filter = ('pub_date',)
-    search_fields = ('title', 'description')
+    search_fields = ('title', 'description') #제목과 기사?
     ordering = ('-pub_date',)
