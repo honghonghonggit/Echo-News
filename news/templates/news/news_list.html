@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
+
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -429,7 +429,8 @@
         /* ── 오늘의 운세 박스 ── */
         .fortune-box {
             position: absolute;
-            left: calc(100% + 150px); /* 티커 우측으로 약 2cm 더 밀어내어 겹침 완전 방지 */
+            left: calc(100% + 150px);
+            /* 티커 우측으로 약 2cm 더 밀어내어 겹침 완전 방지 */
             top: 50%;
             transform: translateY(-50%);
             width: 130px;
@@ -445,9 +446,9 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
-                        0 0 15px rgba(108, 99, 255, 0.3), 
-                        inset 0 0 10px rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 15px rgba(108, 99, 255, 0.3),
+                inset 0 0 10px rgba(255, 255, 255, 0.05);
             z-index: 10;
             overflow: hidden;
         }
@@ -459,7 +460,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.08), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.08), transparent);
             transform: rotate(45deg);
             animation: fortuneShine 4s infinite;
             pointer-events: none;
@@ -467,17 +468,28 @@
         }
 
         @keyframes fortuneShine {
-            0% { left: -100%; top: -100%; }
-            20% { left: 100%; top: 100%; }
-            100% { left: 100%; top: 100%; }
+            0% {
+                left: -100%;
+                top: -100%;
+            }
+
+            20% {
+                left: 100%;
+                top: 100%;
+            }
+
+            100% {
+                left: 100%;
+                top: 100%;
+            }
         }
 
         .fortune-box:hover {
             transform: translateY(-50%) scale(1.05);
             background: linear-gradient(135deg, rgba(108, 99, 255, 0.25), rgba(255, 107, 107, 0.15));
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 
-                        0 0 25px rgba(108, 99, 255, 0.6), 
-                        inset 0 0 15px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 25px rgba(108, 99, 255, 0.6),
+                inset 0 0 15px rgba(255, 255, 255, 0.1);
             border-color: rgba(144, 104, 255, 0.8);
         }
 
@@ -488,7 +500,7 @@
             line-height: 1.4;
             word-break: keep-all;
             pointer-events: none;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 2;
         }
@@ -520,8 +532,13 @@
         }
 
         @keyframes tickerScroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
         }
 
         .ticker-item {
@@ -559,7 +576,7 @@
         .ticker-change.negative {
             color: #ff5252;
         }
-        
+
         .ticker-change.neutral {
             color: var(--text-muted);
         }
@@ -596,9 +613,11 @@
                 flex-direction: column;
                 gap: 1.5rem;
             }
+
             .header-clock {
                 justify-content: center;
             }
+
             .header-spacer {
                 display: none;
             }
@@ -610,6 +629,7 @@
                 flex-direction: column;
                 align-items: center;
             }
+
             .sidebar {
                 width: 100%;
                 max-width: 920px;
@@ -765,12 +785,13 @@
             padding: 0.8rem;
             position: relative;
         }
-        
+
         .bookmark-item a {
             color: inherit;
             text-decoration: none;
             display: block;
         }
+
         .bookmark-item a:hover .bm-title {
             color: var(--accent);
         }
@@ -926,7 +947,7 @@
             padding: 0.4rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
-        
+
         .forecast-item:last-child {
             border-bottom: none;
             padding-bottom: 0;
@@ -958,7 +979,8 @@
         </h1>
 
         <div class="header-controls" style="position: relative;">
-            <img src="{% static 'images/logo.png' %}" alt="School Logo" style="position: absolute; right: 100%; margin-right: 50px; top: 50%; transform: translateY(-50%); height: 94px; width: auto; object-fit: contain;">
+            <img src="{% static 'images/logo.png' %}" alt="School Logo"
+                style="position: absolute; right: 100%; margin-right: 50px; top: 50%; transform: translateY(-50%); height: 94px; width: auto; object-fit: contain;">
             <div class="header-clock">
                 <div id="realtime-clock"><span id="ampm"></span> <span id="time">00:00:00</span></div>
             </div>
@@ -978,7 +1000,8 @@
                 </div>
                 <div class="header-ticker" id="header-ticker">
                     <div class="ticker-content" id="ticker-content">
-                        <span style="color: var(--text-muted); font-size: 0.85rem; padding-left: 1rem;">지표를 불러오는 중...</span>
+                        <span style="color: var(--text-muted); font-size: 0.85rem; padding-left: 1rem;">지표를 불러오는
+                            중...</span>
                     </div>
                 </div>
             </div>
@@ -999,7 +1022,7 @@
 
     <!-- ── 3단 레이아웃 ── -->
     <div class="page-layout">
-        
+
         <!-- ── 왼쪽 사이드바 ── -->
         <aside class="sidebar left-sidebar">
             <div class="weather-widget">
@@ -1016,60 +1039,62 @@
         <div class="main-content">
             <main class="news-container">
 
-        {% if query %}
-        <!-- ── 정렬 탭 ── -->
-        <div class="sort-tabs" id="sort-tabs">
-            <button type="button" class="sort-tab{% if sort == 'date' %} active{% endif %}" data-sort="date"
-                id="tab-date">최신순</button>
-            <button type="button" class="sort-tab{% if sort == 'sim' %} active{% endif %}" data-sort="sim"
-                id="tab-sim">인기순</button>
-        </div>
-        {% endif %}
+                {% if query %}
+                <!-- ── 정렬 탭 ── -->
+                <div class="sort-tabs" id="sort-tabs">
+                    <button type="button" class="sort-tab{% if sort == 'date' %} active{% endif %}" data-sort="date"
+                        id="tab-date">최신순</button>
+                    <button type="button" class="sort-tab{% if sort == 'sim' %} active{% endif %}" data-sort="sim"
+                        id="tab-sim">인기순</button>
+                </div>
+                {% endif %}
 
-        {% for news in news_list %}
-        <a href="{{ news.link }}" target="_blank" rel="noopener noreferrer" class="news-card"
-            id="news-card-{{ forloop.counter }}">
+                {% for news in news_list %}
+                <a href="{{ news.link }}" target="_blank" rel="noopener noreferrer" class="news-card"
+                    id="news-card-{{ forloop.counter }}">
 
-            <button class="bookmark-btn" data-link="{{ news.link }}" data-title="{{ news.title|escape }}" data-desc="{{ news.description|escape }}" aria-label="북마크 추가" onclick="toggleBookmark(event, this)">☆</button>
+                    <button class="bookmark-btn" data-link="{{ news.link }}" data-title="{{ news.title|escape }}"
+                        data-desc="{{ news.description|escape }}" aria-label="북마크 추가"
+                        onclick="toggleBookmark(event, this)">☆</button>
 
-            {% if news.image_url %}
-            <div class="card-thumb" style="background-image: url('{{ news.image_url }}');" role="img"
-                aria-label="{{ news.title }} 썸네일"></div>
-            {% else %}
-            <div class="card-thumb placeholder" role="img" aria-label="썸네일 없음"></div>
-            {% endif %}
-
-            <div class="card-body-custom">
-                <p class="card-title">{{ news.title }}</p>
-                <p class="card-desc">{{ news.description }}</p>
-                <p class="card-meta">
-                    <span>📅</span>
-                    <span>{{ news.pub_date|date:"Y년 m월 d일 H:i" }}</span>
-                    {% if news.reaction_count > 0 %}
-                    <span style="margin-left: 0.6rem;">👍</span>
-                    <span>공감 {{ news.reaction_count }}</span>
+                    {% if news.image_url %}
+                    <div class="card-thumb" style="background-image: url('{{ news.image_url }}');" role="img"
+                        aria-label="{{ news.title }} 썸네일"></div>
+                    {% else %}
+                    <div class="card-thumb placeholder" role="img" aria-label="썸네일 없음"></div>
                     {% endif %}
-                </p>
-            </div>
-        </a>
 
-        {% empty %}
+                    <div class="card-body-custom">
+                        <p class="card-title">{{ news.title }}</p>
+                        <p class="card-desc">{{ news.description }}</p>
+                        <p class="card-meta">
+                            <span>📅</span>
+                            <span>{{ news.pub_date|date:"Y년 m월 d일 H:i" }}</span>
+                            {% if news.reaction_count > 0 %}
+                            <span style="margin-left: 0.6rem;">👍</span>
+                            <span>공감 {{ news.reaction_count }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </a>
 
-        <div class="empty-state" id="empty-state">
-            <div class="icon">🔍</div>
-            {% if query %}
-            <p>검색 결과가 없습니다</p>
-            <p class="hint">"{{ query }}"에 대한 뉴스를 찾지 못했습니다.</p>
-            {% else %}
-            <p>검색어를 입력해 주세요</p>
-            <p class="hint">키워드를 입력하면 실시간 뉴스를 검색합니다.</p>
-            {% endif %}
-        </div>
+                {% empty %}
 
-        {% endfor %}
+                <div class="empty-state" id="empty-state">
+                    <div class="icon">🔍</div>
+                    {% if query %}
+                    <p>검색 결과가 없습니다</p>
+                    <p class="hint">"{{ query }}"에 대한 뉴스를 찾지 못했습니다.</p>
+                    {% else %}
+                    <p>검색어를 입력해 주세요</p>
+                    <p class="hint">키워드를 입력하면 실시간 뉴스를 검색합니다.</p>
+                    {% endif %}
+                </div>
 
-        <!-- 페이지네이션 컨트롤 -->
-        <div class="pagination-container" id="pagination-container"></div>
+                {% endfor %}
+
+                <!-- 페이지네이션 컨트롤 -->
+                <div class="pagination-container" id="pagination-container"></div>
 
             </main>
         </div>
@@ -1102,11 +1127,11 @@
                 const ampm = hours >= 12 ? '오후' : '오전';
                 hours = hours % 12;
                 hours = hours ? hours : 12; // 0시는 12시로 표시
-                
+
                 const paddedHours = String(hours).padStart(2, '0');
                 const minutes = String(now.getMinutes()).padStart(2, '0');
                 const seconds = String(now.getSeconds()).padStart(2, '0');
-                
+
                 ampmElement.textContent = ampm;
                 timeElement.textContent = `${paddedHours}:${minutes}:${seconds}`;
             }
@@ -1134,14 +1159,14 @@
             });
 
             renderPaginationControls();
-            
+
             // 페이지 이동 시 상단으로 부드럽게 스크롤
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function renderPaginationControls() {
             if (!paginationContainer || newsCards.length <= ITEMS_PER_PAGE) {
-                if(paginationContainer) paginationContainer.innerHTML = '';
+                if (paginationContainer) paginationContainer.innerHTML = '';
                 return;
             }
 
@@ -1155,7 +1180,7 @@
 
             const pageBtns = document.querySelectorAll('.page-btn');
             pageBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const page = parseInt(this.getAttribute('data-page'));
                     renderPage(page);
                 });
@@ -1232,7 +1257,7 @@
             const bookmarks = getBookmarks();
             const listEl = document.getElementById('bookmark-list');
             const countEl = document.getElementById('bm-count');
-            
+
             if (!listEl || !countEl) return;
 
             countEl.textContent = bookmarks.length;
@@ -1256,7 +1281,7 @@
         function updateBookmarkButtons() {
             const bookmarks = getBookmarks();
             const links = bookmarks.map(bm => bm.link);
-            
+
             document.querySelectorAll('.bookmark-btn').forEach(btn => {
                 const link = btn.getAttribute('data-link');
                 if (links.includes(link)) {
@@ -1282,7 +1307,7 @@
                 // 날씨 정보 (기온, 풍속, 날씨 코드 + 주간 예보)
                 const weatherRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul');
                 const weatherData = await weatherRes.json();
-                
+
                 // 미세먼지 정보 (PM10)
                 const aqiRes = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=37.57&longitude=126.98&current=pm10');
                 const aqiData = await aqiRes.json();
@@ -1291,9 +1316,9 @@
                 const temp = current.temperature;
                 const windSpeed = current.windspeed;
                 const code = current.weathercode;
-                
+
                 const pm10 = aqiData.current.pm10;
-                
+
                 // WMO Weather interpretation codes
                 const getIconAndDesc = (c) => {
                     if (c === 0) return { icon: '☀️', desc: '맑음' };
@@ -1319,23 +1344,23 @@
                 // 주간 예보 HTML 생성
                 const daily = weatherData.daily;
                 let forecastHtml = '<div class="weather-forecast"><div class="forecast-title">📅 주간 예보</div>';
-                
+
                 // 오늘을 제외하고 내일부터 6일간 표시 (인덱스 1 ~ 6)
                 for (let i = 1; i < 7; i++) {
                     const dateStr = daily.time[i];
                     const maxT = Math.round(daily.temperature_2m_max[i]);
                     const minT = Math.round(daily.temperature_2m_min[i]);
                     const dCode = daily.weathercode[i];
-                    
+
                     const dateObj = new Date(dateStr);
                     const days = ['일', '월', '화', '수', '목', '금', '토'];
                     const dayName = days[dateObj.getDay()];
-                    
+
                     const dIconInfo = getIconAndDesc(dCode);
 
                     forecastHtml += `
                         <div class="forecast-item">
-                            <span class="forecast-date">${dateObj.getMonth()+1}/${dateObj.getDate()} (${dayName})</span>
+                            <span class="forecast-date">${dateObj.getMonth() + 1}/${dateObj.getDate()} (${dayName})</span>
                             <span class="forecast-icon" title="${dIconInfo.desc}">${dIconInfo.icon}</span>
                             <span class="forecast-temp">${minT}° / ${maxT}°</span>
                         </div>
@@ -1378,7 +1403,7 @@
             try {
                 const res = await fetch('/api/ticker/');
                 const json = await res.json();
-                
+
                 if (json.data && json.data.length > 0) {
                     let html = '';
                     json.data.forEach((item, index) => {
@@ -1391,7 +1416,7 @@
                             changeClass = 'negative';
                             changeText = `▼ ${Math.abs(item.change)}%`;
                         }
-                        
+
                         html += `
                             <div class="ticker-item">
                                 <div class="ticker-info">
@@ -1407,7 +1432,7 @@
                             </div>
                         `;
                     });
-                    
+
                     tickerContent.innerHTML = html;
 
                     // 차트 그리기
@@ -1417,7 +1442,7 @@
                             const isPositive = item.change >= 0;
                             const color = isPositive ? '#00e676' : '#ff5252';
                             const bgColor = isPositive ? 'rgba(0, 230, 118, 0.2)' : 'rgba(255, 82, 82, 0.2)';
-                            
+
                             new Chart(ctx, {
                                 type: 'line',
                                 data: {
