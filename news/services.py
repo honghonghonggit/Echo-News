@@ -1,11 +1,11 @@
+import re
+
 import requests
+from bs4 import BeautifulSoup
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 
 from django.conf import settings
-from django.db import IntegrityError
-
-from .models import News
 
 
 def fetch_naver_news(query, display=15, sort='date'):
@@ -40,7 +40,6 @@ def fetch_naver_news(query, display=15, sort='date'):
 
 def _clean_html(text):
     """HTML 태그(<b>, </b> 등)를 제거하고 특수문자를 디코딩한다."""
-    import re
     text = re.sub(r'<.*?>', '', text)
     text = text.replace('&quot;', '"')
     text = text.replace('&amp;', '&')
@@ -61,39 +60,13 @@ def _parse_pub_date(date_str):
         return datetime.now()
 
 
-def save_news_to_db(items):
-    """
-    API에서 받은 뉴스 아이템 리스트를 News 모델에 저장한다.
-    동일한 link가 이미 존재하면 중복 저장하지 않는다.
-
-    Args:
-        items: fetch_naver_news()에서 반환된 아이템 리스트
-
-    Returns:
-        tuple(int, int): (새로 저장된 수, 중복으로 건너뛴 수)
-    """
-    saved = 0
-    skipped = 0
-
-    for item in items: #기사 원본 링크를 받아와 제목과 사진을 함께 화면에 배치하는건가?
-        title = _clean_html(item.get('title', ''))
-        link = item.get('originallink') or item.get('link', '')
-        description = _clean_html(item.get('description', ''))
-        pub_date = _parse_pub_date(item.get('pubDate', ''))
-
-        try:
-            News.objects.create(
-                title=title,
-                link=link,
-                description=description,
-                pub_date=pub_date,
-            )
-            saved += 1
-        except IntegrityError:
-            # link가 unique이므로 중복 뉴스는 건너뜀
-            skipped += 1
-
-    return saved, skipped
+_CRAWL_HEADERS = {
+    'User-Agent': (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/120.0.0.0 Safari/537.36'
+    ),
+}
 
 
 def fetch_og_image(url):
@@ -107,17 +80,7 @@ def fetch_og_image(url):
         str: og:image URL 문자열. 이미지가 없거나 오류 발생 시 빈 문자열 반환.
     """
     try:
-        from bs4 import BeautifulSoup
-
-        headers = {
-            'User-Agent': (
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                'AppleWebKit/537.36 (KHTML, like Gecko) '
-                'Chrome/120.0.0.0 Safari/537.36'
-            ),
-        }
-
-        response = requests.get(url, headers=headers, timeout=5)
+        response = requests.get(url, headers=_CRAWL_HEADERS, timeout=5)
         response.raise_for_status()
 
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -146,16 +109,9 @@ def fetch_reaction_count(url):
     Returns:
         int: 반응 수 합계. 가져오지 못하면 0 반환.
     """
-    import re
-    from bs4 import BeautifulSoup
-
     try:
         headers = {
-            'User-Agent': (
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                'AppleWebKit/537.36 (KHTML, like Gecko) '
-                'Chrome/120.0.0.0 Safari/537.36'
-            ),
+            **_CRAWL_HEADERS,
             'Referer': 'https://n.news.naver.com',
         }
 
@@ -165,9 +121,7 @@ def fetch_reaction_count(url):
         )
         if naver_match:
             oid, aid = naver_match.group(1), naver_match.group(2)
-            api_url = (
-                'https://news.like.naver.com/v1/search/contents'
-            )
+            api_url = 'https://news.like.naver.com/v1/search/contents'
             api_params = {
                 'suppress': 'true',
                 'q': f'NEWS[ne_{oid}_{aid}]',
@@ -204,4 +158,3 @@ def fetch_reaction_count(url):
         return 0
     except Exception:
         return 0
-

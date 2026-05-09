@@ -1,11 +1,10 @@
 import random
 
+import requests
 from django.shortcuts import render
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.core.cache import cache
-import os
-import requests
 
 from .models import News
 from .services import fetch_naver_news, fetch_og_image, fetch_reaction_count, _clean_html, _parse_pub_date
@@ -31,43 +30,39 @@ def news_list(request):
         query = random.choice(DEFAULT_KEYWORDS)
 
     # ── API 호출 ──
-    if query:
-        try:
-            items = fetch_naver_news(query, display=15, sort=sort)
+    try:
+        items = fetch_naver_news(query, display=15, sort=sort)
 
-            # 기존 DB 데이터 전부 삭제
-            News.objects.all().delete()
+        # 기존 DB 데이터 전부 삭제
+        News.objects.all().delete()
 
-            saved = 0
+        for item in items:
+            title = _clean_html(item.get('title', ''))
+            link = item.get('originallink') or item.get('link', '')
+            description = _clean_html(item.get('description', ''))
+            pub_date = _parse_pub_date(item.get('pubDate', ''))
 
-            for item in items:
-                title = _clean_html(item.get('title', ''))
-                link = item.get('originallink') or item.get('link', '')
-                description = _clean_html(item.get('description', ''))
-                pub_date = _parse_pub_date(item.get('pubDate', ''))
+            # og:image 썸네일 추출
+            image_url = fetch_og_image(link)
 
-                # og:image 썸네일 추출
-                image_url = fetch_og_image(link)
+            # 반응 수(공감/이모지) 크롤링
+            naver_link = item.get('link', '')
+            reaction_count = fetch_reaction_count(naver_link)
 
-                # 반응 수(공감/이모지) 크롤링
-                naver_link = item.get('link', '')
-                reaction_count = fetch_reaction_count(naver_link)
+            try:
+                News.objects.create(
+                    title=title,
+                    link=link,
+                    description=description,
+                    pub_date=pub_date,
+                    image_url=image_url,
+                    reaction_count=reaction_count,
+                )
+            except IntegrityError:
+                pass
 
-                try:
-                    News.objects.create(
-                        title=title,
-                        link=link,
-                        description=description,
-                        pub_date=pub_date,
-                        image_url=image_url,
-                        reaction_count=reaction_count,
-                    )
-                    saved += 1
-                except IntegrityError:
-                    pass
-
-        except Exception as e:
-            pass
+    except Exception:
+        pass
 
     # ── 정렬 ──
     if sort == 'sim':
@@ -114,7 +109,7 @@ def ticker_api(request):
             data = res.json()
             
             result_list = data.get('chart', {}).get('result', [])
-            if result_list and len(result_list) > 0:
+            if result_list:
                 meta = result_list[0].get('meta', {})
                 current = meta.get('regularMarketPrice')
                 prev_close = meta.get('previousClose') or meta.get('chartPreviousClose')
@@ -136,8 +131,8 @@ def ticker_api(request):
                         'change': round(change_pct, 2),
                         'history': history
                     })
-        except Exception as e:
-            print(f"Yahoo API error for {symbol}: {e}")
+        except Exception:
+            pass
 
     response_data = {'data': results}
     cache.set(cache_key, response_data, 115)
