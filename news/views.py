@@ -24,7 +24,6 @@ def news_list(request):
     query = request.GET.get('q', '')
     sort = request.GET.get('sort', 'date')
 
-
     # ── 키워드가 없으면 랜덤 키워드 자동 선택 ──
     if not query:
         query = random.choice(DEFAULT_KEYWORDS)
@@ -76,7 +75,6 @@ def news_list(request):
         'news_list': news,
         'query': query,
         'sort': sort,
-
     }
     return render(request, 'news/news_list.html', context)
 
@@ -114,14 +112,11 @@ def ticker_api(request):
                 current = meta.get('regularMarketPrice')
                 prev_close = meta.get('previousClose') or meta.get('chartPreviousClose')
                 
-                # Fetch history
+                # 30일간 종가 히스토리 추출
                 indicators = result_list[0].get('indicators', {})
                 quote = indicators.get('quote', [{}])[0]
                 close_prices = quote.get('close', [])
-                
-                # Filter out None values and use full 30 days
-                valid_closes = [p for p in close_prices if p is not None]
-                history = valid_closes
+                history = [p for p in close_prices if p is not None]
                 
                 if current is not None:
                     change_pct = ((current - prev_close) / prev_close * 100) if prev_close else 0
