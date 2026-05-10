@@ -40,6 +40,7 @@ def fetch_naver_news(query, display=15, sort='date'):
 
 def _clean_html(text):
     """HTML 태그(<b>, </b> 등)를 제거하고 특수문자를 디코딩한다."""
+    #사용자가 읽기 편하게 보여주는 코드
     text = re.sub(r'<.*?>', '', text)
     text = text.replace('&quot;', '"')
     text = text.replace('&amp;', '&')
@@ -65,7 +66,7 @@ _CRAWL_HEADERS = {
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
         'AppleWebKit/537.36 (KHTML, like Gecko) '
         'Chrome/120.0.0.0 Safari/537.36'
-    ),
+    ), #크롤링 시 사용할 기본 HTTP 헤더(User-Agent). 브라우저처럼 보이도록 설정해 차단을 피합니다.
 }
 
 
