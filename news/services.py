@@ -1,11 +1,26 @@
-import re
+"""
+네이버 뉴스 API 호출 및 웹 크롤링 서비스 모듈
 
-import requests
-from bs4 import BeautifulSoup
+뉴스 데이터 수집에 필요한 외부 API 호출, HTML 파싱,
+og:image 추출, 반응 수 크롤링 등의 기능을 제공한다.
+"""
+import re
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 
+import requests
+from bs4 import BeautifulSoup
 from django.conf import settings
+
+
+# 크롤링 시 사용할 기본 HTTP 헤더 — 브라우저처럼 보이도록 설정하여 차단 방지
+_CRAWL_HEADERS = {
+    'User-Agent': (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/120.0.0.0 Safari/537.36'
+    ),
+}
 
 
 def fetch_naver_news(query, display=15, sort='date'):
@@ -39,8 +54,10 @@ def fetch_naver_news(query, display=15, sort='date'):
 
 
 def _clean_html(text):
-    """HTML 태그(<b>, </b> 등)를 제거하고 특수문자를 디코딩한다."""
-    #사용자가 읽기 편하게 보여주는 코드
+    """
+    HTML 태그(<b>, </b> 등)를 제거하고 특수문자를 디코딩한다.
+    사용자가 읽기 편한 텍스트로 변환하는 유틸리티 함수.
+    """
     text = re.sub(r'<.*?>', '', text)
     text = text.replace('&quot;', '"')
     text = text.replace('&amp;', '&')
@@ -59,15 +76,6 @@ def _parse_pub_date(date_str):
         return parsedate_to_datetime(date_str)
     except Exception:
         return datetime.now()
-
-
-_CRAWL_HEADERS = {
-    'User-Agent': (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-        'AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/120.0.0.0 Safari/537.36'
-    ), #크롤링 시 사용할 기본 HTTP 헤더(User-Agent). 브라우저처럼 보이도록 설정해 차단을 피합니다.
-}
 
 
 def fetch_og_image(url):
@@ -116,46 +124,79 @@ def fetch_reaction_count(url):
             'Referer': 'https://n.news.naver.com',
         }
 
-        # ── 네이버 뉴스 URL인 경우 반응 수 API 호출 ──
-        naver_match = re.search(
-            r'n\.news\.naver\.com/(?:mnews/)?article/(\d+)/(\d+)', url
-        )
-        if naver_match:
-            oid, aid = naver_match.group(1), naver_match.group(2)
-            api_url = 'https://news.like.naver.com/v1/search/contents'
-            api_params = {
-                'suppress': 'true',
-                'q': f'NEWS[ne_{oid}_{aid}]',
-            }
-            resp = requests.get(
-                api_url, headers=headers, params=api_params, timeout=5
-            )
-            data = resp.json()
+        # 네이버 뉴스 URL인 경우 반응 수 API 호출
+        naver_count = _fetch_naver_reaction(url, headers)
+        if naver_count is not None:
+            return naver_count
 
-            contents = data.get('contents', [])
-            if contents:
-                reactions = contents[0].get('reactions', [])
-                total = sum(r.get('count', 0) for r in reactions)
-                return total
+        # 일반 URL: BeautifulSoup으로 반응 수 파싱
+        return _fetch_general_reaction(url, headers)
 
-        # ── 일반 URL: BeautifulSoup으로 반응 수 파싱 ──
-        response = requests.get(url, headers=headers, timeout=5)
-        response.raise_for_status()
-
-        soup = BeautifulSoup(response.text, 'html.parser')
-
-        selectors = [
-            'span.u_likeit_text._count',
-            'em.u_cnt._count',
-            'span.like_count',
-        ]
-        for selector in selectors:
-            tag = soup.select_one(selector)
-            if tag:
-                digits = re.sub(r'[^\d]', '', tag.get_text())
-                if digits:
-                    return int(digits)
-
-        return 0
     except Exception:
         return 0
+
+
+def _fetch_naver_reaction(url, headers):
+    """
+    네이버 뉴스 URL에서 반응 수 API를 호출하여 반응 수를 반환한다.
+
+    Args:
+        url: 뉴스 기사 URL
+        headers: HTTP 요청 헤더
+
+    Returns:
+        int | None: 반응 수. 네이버 뉴스 URL이 아니거나 실패 시 None 반환.
+    """
+    naver_match = re.search(
+        r'n\.news\.naver\.com/(?:mnews/)?article/(\d+)/(\d+)', url
+    )
+    if not naver_match:
+        return None
+
+    oid, aid = naver_match.group(1), naver_match.group(2)
+    api_url = 'https://news.like.naver.com/v1/search/contents'
+    api_params = {
+        'suppress': 'true',
+        'q': f'NEWS[ne_{oid}_{aid}]',
+    }
+    resp = requests.get(api_url, headers=headers, params=api_params, timeout=5)
+    data = resp.json()
+
+    contents = data.get('contents', [])
+    if contents:
+        reactions = contents[0].get('reactions', [])
+        return sum(r.get('count', 0) for r in reactions)
+
+    return 0
+
+
+def _fetch_general_reaction(url, headers):
+    """
+    일반 웹 페이지에서 반응 수를 CSS 셀렉터로 파싱하여 반환한다.
+
+    Args:
+        url: 뉴스 기사 URL
+        headers: HTTP 요청 헤더
+
+    Returns:
+        int: 반응 수. 찾지 못하면 0 반환.
+    """
+    response = requests.get(url, headers=headers, timeout=5)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # 반응 수가 표시될 수 있는 CSS 셀렉터 목록
+    selectors = [
+        'span.u_likeit_text._count',
+        'em.u_cnt._count',
+        'span.like_count',
+    ]
+    for selector in selectors:
+        tag = soup.select_one(selector)
+        if tag:
+            digits = re.sub(r'[^\d]', '', tag.get_text())
+            if digits:
+                return int(digits)
+
+    return 0

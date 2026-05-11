@@ -269,54 +269,8 @@
             gap: 0.4rem;
         }
 
-        /* ── 정렬 탭 ── */
-        .sort-tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .sort-tab {
-            padding: 0.55rem 1.4rem;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            letter-spacing: -0.2px;
-        }
-
-        .sort-tab:hover {
-            background: rgba(108, 99, 255, 0.12);
-            border-color: rgba(108, 99, 255, 0.3);
-            color: var(--text-primary);
-        }
-
-        .sort-tab.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-            box-shadow: 0 2px 12px rgba(108, 99, 255, 0.35);
-        }
-
-        .sort-tab.active:hover {
-            background: var(--accent-hover);
-            border-color: var(--accent-hover);
-        }
-
-        /* ── 페이지네이션 ── */
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 2.5rem;
-            flex-wrap: wrap;
-        }
-
-        .page-btn {
+        /* ── 공통 액션 버튼 (정렬 탭, 페이지네이션) ── */
+        .action-btn {
             padding: 0.55rem 1.1rem;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -329,22 +283,42 @@
             letter-spacing: -0.2px;
         }
 
-        .page-btn:hover {
+        .action-btn:hover {
             background: rgba(108, 99, 255, 0.12);
             border-color: rgba(108, 99, 255, 0.3);
             color: var(--text-primary);
         }
 
-        .page-btn.active {
+        .action-btn.active {
             background: var(--accent);
             border-color: var(--accent);
             color: #fff;
             box-shadow: 0 2px 12px rgba(108, 99, 255, 0.35);
         }
 
-        .page-btn.active:hover {
+        .action-btn.active:hover {
             background: var(--accent-hover);
             border-color: var(--accent-hover);
+        }
+
+        /* ── 정렬 탭 ── */
+        .sort-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sort-tab {
+            padding: 0.55rem 1.4rem;
+        }
+
+        /* ── 페이지네이션 ── */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
         }
 
         /* ── 빈 상태 ── */
@@ -1042,9 +1016,9 @@
                 {% if query %}
                 <!-- ── 정렬 탭 ── -->
                 <div class="sort-tabs" id="sort-tabs">
-                    <button type="button" class="sort-tab{% if sort == 'date' %} active{% endif %}" data-sort="date"
+                    <button type="button" class="action-btn sort-tab{% if sort == 'date' %} active{% endif %}" data-sort="date"
                         id="tab-date">최신순</button>
-                    <button type="button" class="sort-tab{% if sort == 'sim' %} active{% endif %}" data-sort="sim"
+                    <button type="button" class="action-btn sort-tab{% if sort == 'sim' %} active{% endif %}" data-sort="sim"
                         id="tab-sim">인기순</button>
                 </div>
                 {% endif %}
@@ -1173,7 +1147,7 @@
             let html = '';
             for (let i = 1; i <= totalPages; i++) {
                 const activeClass = i === currentPage ? ' active' : '';
-                html += `<button class="page-btn${activeClass}" data-page="${i}">[${i}]</button>`;
+                html += `<button class="action-btn page-btn${activeClass}" data-page="${i}">[${i}]</button>`;
             }
             paginationContainer.innerHTML = html;
 
