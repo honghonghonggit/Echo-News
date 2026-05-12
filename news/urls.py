@@ -6,6 +6,6 @@ from . import views
 app_name = 'news'
 
 urlpatterns = [
-    path('', views.news_list, name='news_list'),         # 뉴스 목록 페이지
-    path('api/ticker/', views.ticker_api, name='ticker_api'),  # 금융 지표 API
+    path('', views.news_list, name='news_list'),
+    path('api/ticker/', views.ticker_api, name='ticker_api'),
 ]

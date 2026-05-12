@@ -8,16 +8,13 @@
     <meta name="description" content="Echo News — 실시간 뉴스 토픽 검색 엔진">
     <title>Echo News — 뉴스 검색</title>
 
-    <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YcnS/1p2CzPaBkGC0xHk0TEmDC2lQA7uBIhJ" crossorigin="anonymous">
 
-    <!-- Google Fonts — Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -208,7 +205,7 @@
             text-decoration: none;
         }
 
-        /* 썸네일 */
+
         .card-thumb {
             flex-shrink: 0;
             width: 200px;
@@ -230,7 +227,7 @@
             opacity: 0.3;
         }
 
-        /* 카드 본문 */
+
         .card-body-custom {
             flex: 1;
             padding: 1.2rem 1.5rem;
@@ -945,7 +942,7 @@
 
 <body>
 
-    <!-- ── 헤더 ── -->
+
     <header class="header-section">
         <h1 class="logo">
             <a href="/" style="text-decoration: none; color: inherit;"><span class="echo">Echo</span><span class="news">
@@ -981,7 +978,7 @@
             </div>
         </div>
 
-        <!-- ── 카테고리 탭 ── -->
+
         <div class="category-tabs">
             <a href="?q=미국" class="category-tab{% if query == '미국' %} active{% endif %}">미국</a>
             <a href="?q=경제" class="category-tab{% if query == '경제' %} active{% endif %}">경제</a>
@@ -994,10 +991,10 @@
 
     </header>
 
-    <!-- ── 3단 레이아웃 ── -->
+
     <div class="page-layout">
 
-        <!-- ── 왼쪽 사이드바 ── -->
+
         <aside class="sidebar left-sidebar">
             <div class="weather-widget">
                 <div class="weather-header">
@@ -1009,12 +1006,12 @@
             </div>
         </aside>
 
-        <!-- ── 중앙 뉴스 리스트 ── -->
+
         <div class="main-content">
             <main class="news-container">
 
                 {% if query %}
-                <!-- ── 정렬 탭 ── -->
+
                 <div class="sort-tabs" id="sort-tabs">
                     <button type="button" class="action-btn sort-tab{% if sort == 'date' %} active{% endif %}" data-sort="date"
                         id="tab-date">최신순</button>
@@ -1067,13 +1064,13 @@
 
                 {% endfor %}
 
-                <!-- 페이지네이션 컨트롤 -->
+
                 <div class="pagination-container" id="pagination-container"></div>
 
             </main>
         </div>
 
-        <!-- ── 오른쪽 사이드바 ── -->
+
         <aside class="sidebar right-sidebar">
             <div class="bookmark-section">
                 <div class="bookmark-title"><span>⭐</span> 나의 북마크 (<span id="bm-count">0</span>/6)</div>
@@ -1084,13 +1081,12 @@
 
     </div>
 
-    <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
     <script>
-        // ── 실시간 시계 업데이트 ──
+
         function updateClock() {
             const ampmElement = document.getElementById('ampm');
             const timeElement = document.getElementById('time');
@@ -1099,7 +1095,7 @@
                 let hours = now.getHours();
                 const ampm = hours >= 12 ? '오후' : '오전';
                 hours = hours % 12;
-                hours = hours ? hours : 12; // 0시는 12시로 표시
+                hours = hours ? hours : 12;
 
                 const paddedHours = String(hours).padStart(2, '0');
                 const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -1110,9 +1106,9 @@
             }
         }
         setInterval(updateClock, 1000);
-        updateClock(); // 초기 1회 즉시 실행
+        updateClock();
 
-        // ── 프론트엔드 페이지네이션 ──
+
         const ITEMS_PER_PAGE = 5;
         const newsCards = Array.from(document.querySelectorAll('.news-card'));
         const paginationContainer = document.getElementById('pagination-container');
@@ -1133,7 +1129,6 @@
 
             renderPaginationControls();
 
-            // 페이지 이동 시 상단으로 부드럽게 스크롤
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1160,12 +1155,12 @@
             });
         }
 
-        // 초기 페이지 렌더링
+
         if (newsCards.length > 0) {
             renderPage(1);
         }
 
-        // ── 정렬 탭 클릭 처리 ──
+
         document.querySelectorAll('.sort-tab').forEach(function (tab) {
             tab.addEventListener('click', function () {
                 var sortValue = this.dataset.sort;
@@ -1174,7 +1169,7 @@
             });
         });
 
-        // ── 북마크 기능 ──
+
         const MAX_BOOKMARKS = 6;
         const STORAGE_KEY = 'echo_bookmarks';
 
@@ -1199,12 +1194,11 @@
             const existingIndex = bookmarks.findIndex(bm => bm.link === link);
 
             if (existingIndex !== -1) {
-                // 삭제
+
                 bookmarks.splice(existingIndex, 1);
                 btn.classList.remove('active');
                 btn.textContent = '☆';
             } else {
-                // 추가
                 if (bookmarks.length >= MAX_BOOKMARKS) {
                     alert(`북마크는 최대 ${MAX_BOOKMARKS}개까지만 가능합니다.`);
                     return;
@@ -1267,21 +1261,19 @@
             });
         }
 
-        // 초기화
+
         renderBookmarks();
         updateBookmarkButtons();
 
-        // ── 날씨 위젯 ──
+
         async function fetchWeather() {
             const weatherBody = document.getElementById('weather-body');
             if (!weatherBody) return;
 
             try {
-                // 날씨 정보 (기온, 풍속, 날씨 코드 + 주간 예보)
                 const weatherRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul');
                 const weatherData = await weatherRes.json();
 
-                // 미세먼지 정보 (PM10)
                 const aqiRes = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=37.57&longitude=126.98&current=pm10');
                 const aqiData = await aqiRes.json();
 
@@ -1292,7 +1284,7 @@
 
                 const pm10 = aqiData.current.pm10;
 
-                // WMO Weather interpretation codes
+
                 const getIconAndDesc = (c) => {
                     if (c === 0) return { icon: '☀️', desc: '맑음' };
                     if (c === 1 || c === 2 || c === 3) return { icon: '⛅', desc: '구름 조금/흐림' };
@@ -1314,11 +1306,11 @@
                 else if (pm10 > 80) pmStatus = '나쁨 🟠';
                 else if (pm10 > 30) pmStatus = '보통 🟡';
 
-                // 주간 예보 HTML 생성
+
                 const daily = weatherData.daily;
                 let forecastHtml = '<div class="weather-forecast"><div class="forecast-title">📅 주간 예보</div>';
 
-                // 오늘을 제외하고 내일부터 6일간 표시 (인덱스 1 ~ 6)
+
                 for (let i = 1; i < 7; i++) {
                     const dateStr = daily.time[i];
                     const maxT = Math.round(daily.temperature_2m_max[i]);
@@ -1365,10 +1357,9 @@
             }
         }
 
-        // 페이지 로드 시 날씨 정보 가져오기
         fetchWeather();
 
-        // ── 금융 지표 티커 ──
+
         async function fetchTicker() {
             const tickerContent = document.getElementById('ticker-content');
             if (!tickerContent) return;
@@ -1408,7 +1399,6 @@
 
                     tickerContent.innerHTML = html;
 
-                    // 차트 그리기
                     json.data.forEach((item, index) => {
                         if (item.history && item.history.length > 0) {
                             const ctx = document.getElementById(`ticker-chart-${index}`).getContext('2d');
@@ -1450,9 +1440,9 @@
         }
 
         fetchTicker();
-        setInterval(fetchTicker, 120000); // 2분마다 업데이트
+        setInterval(fetchTicker, 120000);
 
-        // ── 오늘의 운세 ──
+
         const fortunes = [
             "오늘은 뜻밖의 좋은 소식이 찾아옵니다.",
             "작은 실수가 큰 깨달음을 줄 것입니다.",

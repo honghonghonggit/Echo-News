@@ -1,6 +1,4 @@
-"""
-네이버 뉴스 API로 수집한 뉴스 데이터를 저장하는 모델 정의
-"""
+"""네이버 뉴스 API로 수집한 뉴스 데이터를 저장하는 모델 정의"""
 from django.db import models
 
 
@@ -23,8 +21,7 @@ class News(models.Model):
     class Meta:
         verbose_name = '뉴스'
         verbose_name_plural = '뉴스 목록'
-        ordering = ['-pub_date']  # 기본 정렬: 발행일 내림차순
+        ordering = ['-pub_date']
 
     def __str__(self):
-        """관리자 화면 등에서 뉴스 제목을 표시"""
         return self.title
