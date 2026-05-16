@@ -18,7 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* ── 전역 ── */
         :root {
             --bg-body: #0f1117;
             --bg-card: #1a1d28;
@@ -45,7 +44,6 @@
             min-height: 100vh;
         }
 
-        /* ── 헤더 ── */
         .header-section {
             background: linear-gradient(135deg, #151825 0%, #1e2235 100%);
             border-bottom: 1px solid var(--border);
@@ -82,7 +80,6 @@
             color: #ff6b6b;
         }
 
-        /* ── 검색 바 ── */
         .search-wrapper {
             max-width: 640px;
             width: 100%;
@@ -132,7 +129,6 @@
             transform: scale(1.03);
         }
 
-        /* ── 카테고리 탭 ── */
         .category-tabs {
             display: flex;
             gap: 0.6rem;
@@ -169,7 +165,6 @@
             box-shadow: 0 2px 8px rgba(108, 99, 255, 0.4);
         }
 
-        /* ── 결과 메시지 ── */
         .result-message {
             text-align: center;
             color: var(--text-secondary);
@@ -177,7 +172,6 @@
             margin-top: 0.8rem;
         }
 
-        /* ── 뉴스 카드 ── */
         .news-container {
             max-width: 920px;
             margin: 2rem auto;
@@ -205,7 +199,6 @@
             color: inherit;
             text-decoration: none;
         }
-
 
         .card-thumb {
             flex-shrink: 0;
@@ -267,7 +260,6 @@
             gap: 0.4rem;
         }
 
-        /* ── 공통 액션 버튼 (정렬 탭, 페이지네이션) ── */
         .action-btn {
             padding: 0.55rem 1.1rem;
             border-radius: 10px;
@@ -299,7 +291,6 @@
             border-color: var(--accent-hover);
         }
 
-        /* ── 정렬 탭 ── */
         .sort-tabs {
             display: flex;
             gap: 0.5rem;
@@ -310,7 +301,6 @@
             padding: 0.55rem 1.4rem;
         }
 
-        /* ── 페이지네이션 ── */
         .pagination-container {
             display: flex;
             justify-content: center;
@@ -319,7 +309,6 @@
             flex-wrap: wrap;
         }
 
-        /* ── 빈 상태 ── */
         .empty-state {
             text-align: center;
             padding: 5rem 1rem;
@@ -343,7 +332,6 @@
             opacity: 0.7;
         }
 
-        /* ── 레이아웃 ── */
         .page-layout {
             display: flex;
             max-width: 1800px;
@@ -381,7 +369,6 @@
             max-width: 100%;
         }
 
-        /* ── 헤더 컨트롤 (시계 + 검색창) ── */
         .header-controls {
             display: flex;
             align-items: center;
@@ -398,7 +385,6 @@
             margin-left: -30px;
         }
 
-        /* ── 오늘의 운세 박스 ── */
         .fortune-box {
             position: absolute;
             left: calc(100% + 150px);
@@ -477,7 +463,6 @@
             z-index: 2;
         }
 
-        /* ── 금융 지표 티커 ── */
         .header-ticker {
             width: 320px;
             height: 80px;
@@ -592,7 +577,6 @@
 
         }
 
-        /* ── 반응형 ── */
         @media (max-width: 1200px) {
             .page-layout {
                 flex-direction: column;
@@ -623,7 +607,6 @@
             }
         }
 
-        /* ── 스크롤바 ── */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -637,7 +620,6 @@
             border-radius: 3px;
         }
 
-        /* ── 애니메이션 ── */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -691,7 +673,6 @@
             animation-delay: 0.30s;
         }
 
-        /* ── 북마크 ── */
         .bookmark-btn {
             position: absolute;
             top: 15px;
@@ -808,7 +789,6 @@
             padding: 2rem 0;
         }
 
-        /* ── 날씨 위젯 ── */
         .weather-widget {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -883,7 +863,6 @@
             color: var(--text-primary);
         }
 
-        /* ── 주간 예보 ── */
         .weather-forecast {
             display: flex;
             flex-direction: column;
@@ -937,7 +916,6 @@
 
 <body>
 
-
     <header class="header-section">
         <h1 class="logo">
             <a href="/" style="text-decoration: none; color: inherit;"><span class="echo">Echo</span><span class="news">
@@ -973,7 +951,6 @@
             </div>
         </div>
 
-
         <div class="category-tabs">
             <a href="?q=미국" class="category-tab{% if query == '미국' %} active{% endif %}">미국</a>
             <a href="?q=경제" class="category-tab{% if query == '경제' %} active{% endif %}">경제</a>
@@ -989,7 +966,6 @@
 
     <div class="page-layout">
 
-
         <aside class="sidebar left-sidebar">
             <div class="weather-widget">
                 <div class="weather-header">
@@ -1000,7 +976,6 @@
                 </div>
             </div>
         </aside>
-
 
         <div class="main-content">
             <main class="news-container">
@@ -1059,12 +1034,10 @@
 
                 {% endfor %}
 
-
                 <div class="pagination-container" id="pagination-container"></div>
 
             </main>
         </div>
-
 
         <aside class="sidebar right-sidebar">
             <div class="bookmark-section">

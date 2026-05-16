@@ -89,6 +89,5 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# 네이버 API 설정
 NAVER_CLIENT_ID = os.getenv('NAVER_CLIENT_ID', '')
 NAVER_CLIENT_SECRET = os.getenv('NAVER_CLIENT_SECRET', '')

@@ -122,7 +122,6 @@ def _fetch_single_ticker(name, symbol):
         current = meta.get('regularMarketPrice')
         prev_close = meta.get('previousClose') or meta.get('chartPreviousClose')
 
-        # 30일간 종가 히스토리
         indicators = result_list[0].get('indicators', {})
         quote = indicators.get('quote', [{}])[0]
         close_prices = quote.get('close', [])

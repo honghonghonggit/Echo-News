@@ -13,7 +13,6 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 
 
-# 브라우저 위장 헤더 — 크롤링 차단 방지용
 _CRAWL_HEADERS = {
     'User-Agent': (
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
