@@ -43,7 +43,7 @@ def fetch_naver_news(query, display=15, sort='date'):
     return data.get('items', [])
 
 
-def _clean_html(text):
+def clean_html(text):
     """HTML 태그를 제거하고 특수문자를 디코딩한다."""
     text = re.sub(r'<.*?>', '', text)
     text = text.replace('&quot;', '"')
@@ -54,7 +54,7 @@ def _clean_html(text):
     return text.strip()
 
 
-def _parse_pub_date(date_str):
+def parse_pub_date(date_str):
     """RFC 2822 형식의 pubDate 문자열을 datetime 객체로 변환한다."""
     try:
         return parsedate_to_datetime(date_str)

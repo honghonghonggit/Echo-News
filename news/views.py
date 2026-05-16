@@ -8,18 +8,13 @@ from django.http import JsonResponse
 from django.core.cache import cache
 
 from .models import News
-from .services import fetch_naver_news, fetch_og_image, fetch_reaction_count, _clean_html, _parse_pub_date
+from .services import (
+    fetch_naver_news, fetch_og_image, fetch_reaction_count,
+    clean_html, parse_pub_date, _CRAWL_HEADERS,
+)
 
 
 DEFAULT_KEYWORDS = ["미국", "경제", "스포츠", "세계", "날씨", "기술", "연예"]
-
-_YAHOO_HEADERS = {
-    'User-Agent': (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-        'AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/91.0.4472.124 Safari/537.36'
-    ),
-}
 
 _TICKER_SYMBOLS = [
     ('나스닥', '^IXIC'),
@@ -67,10 +62,10 @@ def _fetch_and_save_news(query, sort):
         News.objects.all().delete()
 
         for item in items:
-            title = _clean_html(item.get('title', ''))
+            title = clean_html(item.get('title', ''))
             link = item.get('originallink') or item.get('link', '')
-            description = _clean_html(item.get('description', ''))
-            pub_date = _parse_pub_date(item.get('pubDate', ''))
+            description = clean_html(item.get('description', ''))
+            pub_date = parse_pub_date(item.get('pubDate', ''))
 
             image_url = fetch_og_image(link)
 
@@ -116,7 +111,7 @@ def _fetch_single_ticker(name, symbol):
     """Yahoo Finance에서 단일 지표 데이터를 가져온다. 실패 시 None."""
     try:
         url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=1mo'
-        res = requests.get(url, headers=_YAHOO_HEADERS, timeout=5)
+        res = requests.get(url, headers=_CRAWL_HEADERS, timeout=5)
         data = res.json()
 
         result_list = data.get('chart', {}).get('result', [])
