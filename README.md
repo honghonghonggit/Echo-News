@@ -1,23 +1,81 @@
 # 🗞️ Echo News (실시간 뉴스 토픽 검색 엔진)
 
-## 🚀 주요 기능 (Key Features)
-- **실시간 인기 뉴스:** 초기 화면 접속 시 분야별 상위 20~30개 기사 자동 노출
-- **키워드 맞춤 검색:** 사용자 입력 키워드 기반 실시간 크롤링 및 결과 제공
-- **스마트 정렬:** 조회수 및 최신순 기반의 데이터 정렬 기능
-- **원문 연결:** 각 기사 클릭 시 해당 언론사 원문 페이지로 즉시 이동
-
-## 🛠️ 기술 스택 (Tech Stack)
-- **Backend:** Python, Django
-- **Crawling:** BeautifulSoup4
-- **Frontend:** Open Source UI Library (Responsive Web)
-
-## 📊 데이터 처리 프로세스 (Data Flow)
-1. **사용자:** 검색창에 키워드 입력 및 전송
-2. **백엔드(Django):** 외부 뉴스 서버에 실시간 크롤링 요청
-3. **백엔드(BeautifulSoup):** 데이터 정제 및 상위 20~30개 기사 추출
-4. **사용자:** 검색 결과 화면 수신 및 원문 연결
-
-- **장세현 (@goworkufokhv):** 팀장 / 백엔드 개발 
-- **홍성제 (@honghonghonggit):**  / 백엔드 개발
-- **이규황 (l01089959035-hub):**  /  발표
-- **박근태 (@arigatogozi):**  / 프론트엔드 개발
+## 📌 프로젝트 소개
+ 
+Echo News는 단국대학교 오픈소스SW기초 수업 팀 프로젝트로 개발된 실시간 뉴스 검색 엔진입니다.
+사용자가 키워드를 입력하면 네이버 뉴스 API로 관련 기사를 실시간으로 수집하고,
+BeautifulSoup4로 썸네일 이미지와 공감수를 크롤링하여 최신순/인기순으로 정렬해 제공합니다.
+ 
+---
+ 
+## 👥 팀원
+ 
+| 이름 | 학번 | 역할 |
+|------|------|------|
+| 장세현 | 32223907 | 프론트 구현 |
+| 홍성제 | 32225001 | 백엔드 구현 |
+| 이규황 | 32223026 | 발표 담당 |
+| 박근태 | 32221635 | 백엔드 구현 |
+ 
+---
+ 
+## 🔧 기술 스택
+ 
+| 분류 | 기술 |
+|------|------|
+| 백엔드 | Python 3.11, Django 5.2 |
+| 크롤링 | requests, BeautifulSoup4 |
+| 데이터 수급 | 네이버 뉴스 검색 API |
+| 날씨 | Open-Meteo API |
+| 주식/환율 | Yahoo Finance 비공식 API |
+| 프론트엔드 | Bootstrap 5, Chart.js |
+| DB | SQLite |
+| 보안 | python-dotenv |
+| 협업 | Git / GitHub |
+ 
+---
+ 
+## 🗂️ 주요 기능
+ 
+- 🔍 **키워드 검색** — 네이버 뉴스 API로 실시간 기사 15건 수집
+- 🗂️ **카테고리 탭** — 미국, 경제, 스포츠, 세계, 날씨, 기술, 연예
+- 🖼️ **썸네일 이미지** — og:image 메타태그 크롤링
+- 🔃 **정렬 기능** — 최신순 / 공감수 기반 인기순
+- 📄 **페이지네이션** — 5개씩 나눠서 표시
+- ⭐ **북마크** — 기사 저장 및 사이드바 목록 표시
+- 🌤️ **날씨 위젯** — 서울 실시간 날씨 (Open-Meteo)
+- 📈 **주식/환율 티커** — 나스닥, 코스피, 코스닥, S&P500, 환율
+- 🔮 **오늘의 운세** — 클릭 시 랜덤 운세 표시
+- 🕐 **실시간 시계** — 오전/오후 포함 HH:MM:SS
+---
+ 
+## 📁 프로젝트 구조
+ 
+```
+Echo-News/
+├── echonews/          # Django 프로젝트 설정
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── news/              # 뉴스 앱
+│   ├── models.py      # News 모델
+│   ├── views.py       # 뷰 로직
+│   ├── services.py    # API 호출 및 크롤링
+│   ├── urls.py
+│   └── templates/
+│       └── news/
+│           └── news_list.html
+├── .env               # 환경변수 (git 제외)
+├── .gitignore
+├── manage.py
+└── requirements.txt
+```
+ 
+---
+ 
+## 🔗 참고 자료
+ 
+- 네이버 개발자 센터: https://developers.naver.com
+- Django 공식 문서: https://docs.djangoproject.com
+- Open-Meteo API: https://open-meteo.com
+- BeautifulSoup4 문서: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
