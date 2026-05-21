@@ -2,16 +2,16 @@
 
 from django.db import migrations
 
-
+# News 모델에서 comment__count 필드를 제거하는 migration
 class Migration(migrations.Migration):
-
+# migration이 실행되기 전에 반드시 적용되어야 하는 이전 migration
     dependencies = [
         ('news', '0002_news_comment_count'),
     ]
-
+# 실제 데이터베이스에 적용될 작업 목록
     operations = [
         migrations.RemoveField(
-            model_name='news',
-            name='comment_count',
+            model_name='news', # 수정할 모델 이름
+            name='comment_count', # 제거할 필드 이름
         ),
     ]
