@@ -2,17 +2,18 @@
 
 from django.db import migrations, models
 
-
 class Migration(migrations.Migration):
-
+# News 모델을 생성하는 초기 migration
     initial = True
-
+# 선행될 migration 목록
     dependencies = [
     ]
-
+# 데이터베이스에 적용될 작업 목록
     operations = [
         migrations.CreateModel(
+            # 생성할 모델 이름
             name='News',
+            # 모델의 필드 정의
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=300, verbose_name='뉴스 제목')),
