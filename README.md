@@ -91,15 +91,11 @@ cd Echo-News
 ```
 
 ### 2. 환경변수 설정
-`.env.example` 파일을 `.env`로 복사한 후 API 키를 입력해줘요.
+`.env.example`을 `.env`로 이름 변경 후 API 키를 입력해주세요.
 
-Django Secret Key
-DJANGO_SECRET_KEY=your-django-secret-key-here
-네이버 뉴스 검색 API 키 (https://developers.naver.com 에서 발급)
-NAVER_CLIENT_ID=your-naver-client-id-here
-NAVER_CLIENT_SECRET=your-naver-client-secret-here
+> 네이버 API 키 발급: https://developers.naver.com
 
-### 4. DB 마이그레이션 및 서버 실행
+### 3. DB 마이그레이션 및 서버 실행
 ```bash
 python manage.py migrate
 python manage.py runserver
