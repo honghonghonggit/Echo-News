@@ -91,3 +91,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' #모든 모델의 기본키
 
 NAVER_CLIENT_ID = os.getenv('NAVER_CLIENT_ID', '') #네이버 API 아이디
 NAVER_CLIENT_SECRET = os.getenv('NAVER_CLIENT_SECRET', '') #네이버 API 비밀키
+
+
+#.env 파일 생성
+#↓
+#load_dotenv() 실행
+#↓
+#환경변수 등록
+#↓
+#os.getenv()로 읽기
+#↓
+#SECRET_KEY/API KEY 보호
